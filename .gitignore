@@ -1,5 +1,12 @@
+venv/
 .venv-fedora/
 __pycache__/
 *.pyc
 .env
 *.wav
+vosk-model/
+*.onnx
+*.onnx.json
+*.bak*
+IMPORTANT*
+*.pdf

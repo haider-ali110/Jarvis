@@ -1,0 +1,6 @@
+flask
+flask-cors
+send2trash
+psutil
+requests
+scikit-learn
