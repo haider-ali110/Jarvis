@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>J.A.R.V.I.S. Complete Feature Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--rgb:255,24,56;--a:#ff1838;--bg:#050304;--txt:#f4dfe2;--mut:#b99ba0;--line:rgba(255,24,56,.4);--pan:rgba(12,7,9,.85);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;color:var(--txt);background:radial-gradient(ellipse at top,#2a0710 0,var(--bg) 60%,#000 100%) fixed;font:15px/1.65 'Share Tech Mono',monospace}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 3px,rgba(255,24,56,.05) 4px);z-index:9}
+main{max-width:980px;margin:0 auto;padding:28px 16px 80px}
+h1,h2,h3{font-family:Orbitron,sans-serif;color:var(--a);margin:0}
+.hero{text-align:center;padding:56px 10px 40px;border:1px solid var(--line);background:var(--pan);position:relative;margin-bottom:28px}
+.hero:before,.hero:after{content:"";position:absolute;width:34px;height:34px;border:4px solid var(--a)}
+.hero:before{top:-2px;left:-2px;border-right:0;border-bottom:0}.hero:after{bottom:-2px;right:-2px;border-left:0;border-top:0}
+h1{font-size:clamp(34px,9vw,84px);font-weight:900;letter-spacing:.14em;text-shadow:0 0 28px var(--a),0 0 70px var(--a);animation:gl 5s steps(2) infinite}
+@keyframes gl{93%{transform:none}95%{transform:translateX(5px);text-shadow:-6px 0 #fff,6px 0 #f00}97%{transform:none}}
+.sub{color:var(--mut);letter-spacing:.3em;margin-top:10px;font-size:12px}
+.tag{display:inline-block;border:1px solid var(--line);padding:3px 10px;margin:14px 4px 0;font-size:12px;color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
+nav a{border:1px solid var(--line);background:rgba(var(--rgb),.07);color:var(--txt);text-decoration:none;padding:5px 10px;font-size:12px}
+nav a:hover,nav a:focus-visible{background:rgba(var(--rgb),.28);outline:0;box-shadow:0 0 14px rgba(var(--rgb),.4)}
+section{border:1px solid var(--line);background:var(--pan);padding:22px 20px;margin:0 0 22px;position:relative}
+section:before{content:"";position:absolute;left:-1px;top:-1px;width:26px;height:26px;border:3px solid var(--a);border-right:0;border-bottom:0}
+h2{font-size:clamp(17px,3.4vw,24px);letter-spacing:.12em;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+h3{font-size:14px;letter-spacing:.1em;margin:20px 0 8px;color:#ff6a80}
+p{margin:8px 0;max-width:76ch}
+.box{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:rgba(var(--rgb),.14);color:var(--a);font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:.1em}
+td:first-child{color:#ff8a9b;white-space:nowrap}
+code,.cmd{background:#11090c;border:1px solid var(--line);color:#ffd2d9;padding:1px 7px;display:inline-block;margin:2px 3px 2px 0}
+.pw{border:2px solid var(--a);background:rgba(var(--rgb),.1);padding:16px;text-align:center;margin:14px 0;box-shadow:0 0 22px rgba(var(--rgb),.3)}
+.pw b{font:900 40px Orbitron,sans-serif;color:#fff;letter-spacing:.3em;text-shadow:0 0 18px var(--a)}
+.warn{border-left:4px solid var(--a);background:rgba(var(--rgb),.08);padding:9px 14px;margin:12px 0;color:var(--txt)}
+ul{padding-left:20px;margin:8px 0}li{margin:4px 0}
+.dots{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.dots span{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:4px 10px 4px 5px;font-size:12px}
+.dots i{width:22px;height:22px;border-radius:50%;display:block}
+footer{text-align:center;color:var(--mut);letter-spacing:.2em;font-size:11px;margin-top:30px}
+@media(prefers-reduced-motion:reduce){h1{animation:none}html{scroll-behavior:auto}}
+</style></head><body><main>
+
+<div class="hero"><h1>J.A.R.V.I.S.</h1>
+<div class="sub">COMPLETE FEATURE GUIDE // SAFETY PROTOCOLS DISABLED</div>
+<span class="tag">app.py backend</span><span class="tag">index.html 3D frontend</span><span class="tag">Fedora Linux</span><span class="tag">Flask + three.js</span></div>
+
+<nav>
+<a href="#over">Overview</a><a href="#front">Frontend</a><a href="#save">Saves &amp; restore</a><a href="#lock">Lock</a><a href="#voice">Voice &amp; mic</a><a href="#modes">Modes &amp; voices</a><a href="#sys">System control</a><a href="#files">Files</a><a href="#prod">Tasks &amp; timers</a><a href="#info">Info &amp; lookups</a><a href="#fun">Fun &amp; math</a><a href="#smart">Smart understanding</a><a href="#safe">Safety</a><a href="#conf">Config</a><a href="#api">API</a>
+</nav>
+
+<section id="over"><h2>1. WHAT IS JARVIS</h2>
+<p>J.A.R.V.I.S. is a voice and text assistant for your PC. <code>app.py</code> is the brain (Python, Flask, speech, system control) and <code>index.html</code> is the face (a 3D hologram built with three.js). The app opens in its own desktop window, or in your browser if you start it with <code>--browser</code>.</p>
+<p>Identity answer: <i>"I am J.A.R.V.I.S., core operating intelligence for The Silent Exploit Base Project for learning."</i> Say <span class="cmd">who are you</span> to hear it.</p>
+<ul><li>Works by typing or by voice (microphone).</li><li>Speaks replies out loud, in a choice of voices.</li><li>Understands imperfect English and accents.</li><li>Remembers how you left it when you restart.</li><li>Greets you by time of day and plays a startup message.</li></ul>
+<h3>Startup and greeting</h3>
+<p>On start Jarvis runs a diagnostics check in the terminal, says a random startup line (never the same twice in a row), then greets you: Good morning, afternoon, evening, or a late-night "Still grinding, bro?".</p>
+<span class="cmd">run diagnostics</span><span class="cmd">what can you do</span></section>
+
+<section id="front"><h2>2. THE FRONTEND (3D INTERFACE)</h2>
+<h3>What you see</h3>
+<ul>
+<li><b>3D core</b> in the centre: spinning shape with orbit rings, glow, particles and a floor grid. It pulses faster when the mic is on and when system load is high.</li>
+<li><b>Watching eye</b> that follows your cursor, blinks, and narrows with threat level. Plus many background eyes.</li>
+<li><b>Floating 3D panels:</b> title banner, CPU, RAM, threat, latency, FPS and battery gauges, info panel, intrusion log, direct-line chat panel, clock, and session stats.</li>
+<li><b>Evil cursor</b> (rotating ring and eye) with a bat trail. Clicking spawns a bat swarm. Ambient bat flocks fly across the screen.</li>
+<li><b>Seasons:</b> Winter, Spring, Summer, Autumn and Storm cycle automatically with snow, petals, embers, leaves or rain, and a big announcement each time.</li>
+<li><b>Bat and eyes intro</b> on startup. Click it to skip.</li>
+<li><b>Danger levels</b> 0 to 3 add warning stripes, red alarm vignette and camera shake.</li>
+</ul>
+<h3>Buttons and controls</h3>
+<div class="box"><table><tr><th>CONTROL</th><th>WHAT IT DOES</th></tr>
+<tr><td>MIC ON / OFF</td><td>Turns voice input on or off. Also: press <code>V</code>, or click the 3D core or the eye.</td></tr>
+<tr><td>VOICE ON / OFF</td><td>Switches spoken replies on or off (text-only mode).</td></tr>
+<tr><td>STOP</td><td>Appears while Jarvis talks. Cuts the voice off immediately.</td></tr>
+<tr><td>CUSTOMIZE</td><td>Opens the settings drawer. Shortcut: <code>Ctrl+,</code></td></tr>
+<tr><td>&#8212; (minimize)</td><td>Hides the scene and leaves a small draggable eye orb. Click the orb to wake it. Shortcut: <code>M</code></td></tr>
+<tr><td>&#9633; (fullscreen)</td><td>Toggle fullscreen.</td></tr>
+<tr><td>Command box + SEND</td><td>Type any command. <code>Up</code> / <code>Down</code> arrows browse your recent commands. <code>Ctrl+K</code> focuses the box.</td></tr>
+<tr><td>Quick chips</td><td>One-click buttons under the box. You define them yourself.</td></tr>
+<tr><td>Recent chips</td><td>Your last four commands. Click to refill the box. Passwords are never saved here.</td></tr>
+<tr><td>Keyboard</td><td><code>H</code> hides the dock (clean view), <code>Esc</code> closes the drawer.</td></tr></table></div>
+<h3>Customize drawer: everything you can change</h3>
+<div class="dots"><span><i style="background:#ff1838"></i>Danger Red</span><span><i style="background:#18b4ff"></i>Arc Blue</span><span><i style="background:#2dff7a"></i>Toxic Green</span><span><i style="background:#ffb020"></i>Amber</span><span><i style="background:#a855ff"></i>Violet</span><span><i style="background:#d8e6ff"></i>Ice White</span></div>
+<div class="box"><table><tr><th>GROUP</th><th>SETTINGS</th></tr>
+<tr><td>Look</td><td>Performance mode (Auto, Low, Medium, High), accent colour, background colour, font (Orbitron, Terminal, Clean), text size, panel opacity.</td></tr>
+<tr><td>3D core</td><td>Core shape (icosahedron, torus knot, sphere, cube, octahedron), orbit rings 0 to 8, core size, glow, particle count, floor grid, animation speed, camera parallax, wireframe, watching eye, glitch amount, event shockwaves.</td></tr>
+<tr><td>Background effects</td><td>Auto season cycle, seconds per season, two effect layers (snow, rain, wind, embers, fireflies, dust, petals, leaves) each with amount, speed and size, wind direction, effect colour.</td></tr>
+<tr><td>Camera and screen</td><td>Camera distance, sway, scanlines, hologram flicker, colour shift, auto colour cycle.</td></tr>
+<tr><td>Evil cursor and bats</td><td>Cursor on/off and size, bat trail, trail density, bat size, ambient bats, background eyes, play bat intro.</td></tr>
+<tr><td>Every widget (12)</td><td>Show or hide, title text, left/right, up/down, near/far, size, turn angle, float amount. Applies to title, CPU, RAM, threat, info, log, chat, latency, FPS, battery, clock, stats.</td></tr>
+<tr><td>Info panel text</td><td>Rename all five labels and values (default: UPLINK, HOST FEDORA LINUX, GATEWAY LOCALHOST:5000, VOICE PIPER RYAN, STATE UNRESTRICTED).</td></tr>
+<tr><td>System</td><td>System name, subtitle, assistant label, your label, danger level, alert sounds, refresh rate, quick commands.</td></tr></table></div>
+<h3>Drawer action buttons</h3>
+<p><span class="cmd">EXPORT</span> saves your settings as a JSON file. <span class="cmd">IMPORT</span> loads one back. <span class="cmd">RESET LAYOUT</span> puts the panels back. <span class="cmd">ORBIT LAYOUT</span> arranges panels in a ring. <span class="cmd">SCREENSHOT</span> saves the 3D scene as a PNG. <span class="cmd">FULLSCREEN</span>. <span class="cmd">RESET ALL</span> restores defaults. <span class="cmd">CLEAR HISTORY</span> wipes the recent-commands list.</p>
+<h3>Quick commands format</h3>
+<p>In the drawer, one per line as <code>Label|command</code>, for example:</p>
+<span class="cmd">Weather|what is the weather</span><span class="cmd">Shot|take a screenshot</span><span class="cmd">Brief|daily briefing</span>
+<h3>Change theme by voice or text</h3>
+<span class="cmd">change theme to blue</span><span class="cmd">theme green</span><span class="cmd">violet theme</span><span class="cmd">next theme</span><span class="cmd">change theme</span>
+<p>Also accepted: cyan (blue), purple (violet), gold, yellow, orange (amber), ice, silver (white), danger (red). The 3D scene recolours instantly.</p></section>
+
+<section id="save"><h2>3. SAVES: REOPENS THE WAY YOU LEFT IT</h2>
+<p>Everything is stored in the folder <code>~/.jarvis</code>, so a restart brings Jarvis back exactly as it was. Settings are saved in two places (browser storage and the backend file), because the desktop window forgets browser storage on its own.</p>
+<div class="box"><table><tr><th>WHAT IS SAVED</th><th>WHERE</th><th>RESTORED ON RESTART</th></tr>
+<tr><td>Whole customize panel (colours, layout, effects, all sliders)</td><td>ui_settings.json</td><td>Yes, injected into the page when it loads</td></tr>
+<tr><td>Quick commands and recent commands</td><td>ui_settings.json</td><td>Yes</td></tr>
+<tr><td>Theme colour (including voice changes)</td><td>state.json</td><td>Yes</td></tr>
+<tr><td>Mode (evil, friday, hacker...) and its personality</td><td>state.json</td><td>Yes</td></tr>
+<tr><td>Chosen voice</td><td>state.json</td><td>Yes</td></tr>
+<tr><td>Voice on / off (speak or silent)</td><td>state.json</td><td>Yes</td></tr>
+<tr><td>Microphone on / off</td><td>state.json</td><td>Yes (turn off with <code>JARVIS_RESTORE_MIC=0</code>)</td></tr>
+<tr><td>Locked state</td><td>state.json</td><td>Yes. A locked Jarvis stays locked after restart and opens on the lock screen.</td></tr>
+<tr><td>Chat history (last 200 messages)</td><td>history.json</td><td>Yes</td></tr>
+<tr><td>Notes, tasks, aliases, custom commands, modes</td><td>notes.txt, tasks.json, aliases.json, commands.json, modes.json</td><td>Yes</td></tr>
+<tr><td>Desktop window storage</td><td>~/.jarvis/webview</td><td>Yes (non-private window)</td></tr></table></div></section>
+
+<section id="lock"><h2>4. LOCK JARVIS (PASSWORD)</h2>
+<div class="pw"><div style="color:var(--mut);letter-spacing:.3em;font-size:12px;margin-bottom:8px">YOUR JARVIS PASSWORD</div><b>2808</b></div>
+<div class="warn">This page shows your real password. Keep this file private. Jarvis itself never stores the password in plain text, only a salted hash in <code>~/.jarvis/lock.json</code> (file permission 600).</div>
+<h3>How to set it</h3>
+<p>Type this in the command box (typing is safer than saying it):</p>
+<span class="cmd">set password 2808</span>
+<p>Also works: <code>change password ...</code>, <code>new password ...</code>, <code>update password ...</code>. Minimum four characters. Spoken numbers count too: saying "two eight zero eight" matches 2808, because number words become digits and spaces are ignored.</p>
+<h3>How to lock</h3>
+<span class="cmd">lock jarvis</span><span class="cmd">lock screen</span><span class="cmd">lock the pc</span><span class="cmd">secure yourself</span>
+<ul><li><b>lock jarvis</b> locks only the assistant.</li><li><b>lock screen / lock pc</b> locks the Linux session and also locks Jarvis (needs a password to be set).</li></ul>
+<h3>What a locked Jarvis looks like</h3>
+<ul><li>A full-screen red <b>LOCKED</b> overlay hides the panels and chat. Only the command box stays.</li><li>The input turns into a password field (masked).</li><li>Customize drawer, buttons and chips are hidden. Minimize is blocked.</li><li><b>Every</b> input, spoken or typed, is treated only as a password attempt.</li></ul>
+<h3>How to unlock</h3>
+<p>Just type or say <code>2808</code>. You can also say <code>unlock</code> first, then the password, or <code>the password is 2808</code>. On success you hear "Password accepted. Welcome back." and the system screen unlocks too (via loginctl).</p>
+<span class="cmd">unlock</span><span class="cmd">unlock the screen</span><span class="cmd">unlock jarvis</span><span class="cmd">cancel</span>
+<h3>Protection rules</h3>
+<ul><li>5 wrong tries gives a 30 second lockout.</li><li>The password is never written to chat history, the terminal log, or the recent-commands list (shown as ******).</li><li>The Whisper command-word hint is switched off while locked, so it does not distort the password.</li><li>Restarting does not unlock Jarvis.</li></ul></section>
+
+<section id="voice"><h2>5. VOICE: MICROPHONE AND SPEECH</h2>
+<h3>Listening</h3>
+<ul><li>Click MIC, press <code>V</code>, or click the core. The mic stays open between phrases, so the first words are not lost.</li><li>English only. Urdu, Hindi or Arabic script results are rejected.</li><li>Jarvis ignores his own voice (echo guard) and mutes the mic while he speaks.</li><li>Wake word is off by default. Set <code>JARVIS_WAKE=1</code> to require "Hey Jarvis" (also hey, hi, ok, okay), with a 10 second awake window plus 8 seconds after each reply.</li></ul>
+<h3>Speech engines (auto order)</h3>
+<div class="box"><table><tr><th>ENGINE</th><th>NOTES</th></tr>
+<tr><td>Whisper (faster-whisper)</td><td>Offline, best with accents. Model small.en by default. Loads in the background.</td></tr>
+<tr><td>Google</td><td>Online. Asks for several guesses and picks the best command match. en-IN then en-US.</td></tr>
+<tr><td>Vosk</td><td>Offline backup if a model is in <code>~/vosk-model</code>.</td></tr></table></div>
+<span class="cmd">which speech engine</span><span class="cmd">list microphones</span>
+<h3>Talking back</h3>
+<span class="cmd">stop talking</span><span class="cmd">be quiet</span><span class="cmd">voice off</span><span class="cmd">silent mode</span><span class="cmd">voice on</span><span class="cmd">say that again</span><span class="cmd">copy that</span>
+<p>Long replies show in full but only the first 220 characters are spoken. Repeated phrases are cached so they play instantly. Typed commands are spoken too (turn off with <code>JARVIS_SPEAK_TYPED=0</code>). If Piper fails, a backup voice (espeak-ng) is used so Jarvis never goes silent.</p></section>
+
+<section id="modes"><h2>6. TRANSFORM MODES AND VOICES</h2>
+<p>Each mode changes the voice and the AI personality. Say it or type it.</p>
+<div class="box"><table><tr><th>MODE</th><th>VOICE</th><th>PERSONALITY</th><th>COMMAND</th></tr>
+<tr><td>jarvis</td><td>evil (default)</td><td>Original self</td><td><code>back to normal</code></td></tr>
+<tr><td>normal</td><td>normal</td><td>Plain</td><td><code>normal mode</code></td></tr>
+<tr><td>evil</td><td>evil</td><td>Dark, sarcastic villain AI</td><td><code>transform into evil</code></td></tr>
+<tr><td>friday</td><td>friday</td><td>Warm and playful</td><td><code>become friday</code></td></tr>
+<tr><td>hacker</td><td>hacker</td><td>Short, cold, technical</td><td><code>hacker mode</code></td></tr>
+<tr><td>robot</td><td>robot</td><td>Literal robot, formal</td><td><code>switch to robot mode</code></td></tr></table></div>
+<p>Voice only switch: <span class="cmd">robot voice</span><span class="cmd">evil voice</span><span class="cmd">normal voice</span></p>
+<p>Make your own modes by editing <code>~/.jarvis/modes.json</code> (voice, persona, message). Voice effects use sox: pitch, tempo, bass, overdrive, echo, reverb.</p></section>
+
+<section id="sys"><h2>7. SYSTEM CONTROL</h2>
+<div class="box"><table><tr><th>FEATURE</th><th>EXAMPLE COMMANDS</th></tr>
+<tr><td>Volume</td><td><code>increase the volume</code> <code>volume down</code> <code>louder</code> <code>mute</code> <code>set volume to 40 percent</code> <code>what is the volume</code></td></tr>
+<tr><td>Brightness</td><td><code>increase brightness</code> <code>brightness down</code> <code>set brightness to 70</code> (never below 5%)</td></tr>
+<tr><td>Wi-Fi / Bluetooth</td><td><code>turn off wifi</code> <code>turn on bluetooth</code> <code>which wifi</code></td></tr>
+<tr><td>Media</td><td><code>pause music</code> <code>play music</code> <code>next song</code> <code>previous song</code> <code>what is playing</code></td></tr>
+<tr><td>Screenshot</td><td><code>take a screenshot</code> (saved in Pictures)</td></tr>
+<tr><td>Clipboard</td><td><code>read my clipboard</code> <code>copy that</code></td></tr>
+<tr><td>Voice typing</td><td><code>type hello world</code> <code>dictate my message</code></td></tr>
+<tr><td>Windows</td><td><code>minimize window</code> <code>maximize window</code> <code>switch window</code> <code>fullscreen</code></td></tr>
+<tr><td>Open apps</td><td><code>open firefox</code> <code>open vs code</code> <code>open terminal</code> <code>open calculator</code> <code>open settings</code> <code>open spotify</code> <code>open whatsapp</code> <code>open gimp</code> (any installed program)</td></tr>
+<tr><td>Folders</td><td><code>open downloads</code> <code>open documents</code> <code>open pictures</code> <code>open desktop</code> <code>open file manager</code></td></tr>
+<tr><td>Close apps</td><td><code>close firefox</code> (asks yes or no first, protected system processes are skipped)</td></tr>
+<tr><td>Power</td><td><code>shut down the computer</code> <code>restart the pc</code> (always asks yes or no)</td></tr>
+<tr><td>Phone (KDE Connect)</td><td><code>find my phone</code> <code>send message hello to my phone</code></td></tr>
+<tr><td>Status</td><td><code>battery status</code> <code>disk space</code> <code>cpu usage</code> <code>cpu temperature</code> <code>uptime</code> <code>what is using my cpu</code> <code>what is using memory</code></td></tr>
+<tr><td>Network</td><td><code>my ip address</code> <code>am I online</code></td></tr>
+<tr><td>Auto alerts</td><td>Speaks a warning when battery is 15% or less, or CPU stays over 90% for a minute.</td></tr></table></div>
+<p>Windows is supported too (media keys, drive letters, Control Panel, Task Manager, Notepad, Word, Excel).</p></section>
+
+<section id="files"><h2>8. SAFE FILE COMMANDS</h2>
+<p>Only the <b>Desktop, Documents and Downloads</b> folders are touched. Delete never erases: it moves the file to the trash after you say yes.</p>
+<div class="box"><table><tr><th>ACTION</th><th>EXAMPLE</th></tr>
+<tr><td>Create file</td><td><code>create file notes dot txt with hello world in documents</code></td></tr>
+<tr><td>Create folder</td><td><code>create folder projects on desktop</code></td></tr>
+<tr><td>Read file</td><td><code>read file notes.txt in documents</code></td></tr>
+<tr><td>List files</td><td><code>list files in downloads</code></td></tr>
+<tr><td>Find file</td><td><code>find file report</code></td></tr>
+<tr><td>Open file</td><td><code>open file report.pdf</code></td></tr>
+<tr><td>Rename</td><td><code>rename old.txt to new.txt</code></td></tr>
+<tr><td>Move / copy</td><td><code>move notes.txt from desktop to documents</code> <code>copy photo.png to downloads</code></td></tr>
+<tr><td>Delete</td><td><code>delete file old.txt</code> then <code>yes</code> (needs exact name)</td></tr></table></div></section>
+
+<section id="prod"><h2>9. TASKS, NOTES, TIMERS</h2>
+<div class="box"><table><tr><th>FEATURE</th><th>EXAMPLE COMMANDS</th></tr>
+<tr><td>To do list</td><td><code>add task buy milk</code> <code>add call mom to my tasks</code> <code>read my tasks</code> <code>done task 2</code> <code>clear all tasks</code> (asks first)</td></tr>
+<tr><td>Notes</td><td><code>take a note meeting at five</code> <code>read my notes</code> <code>clear notes</code> (asks first). Each note is time-stamped.</td></tr>
+<tr><td>Timers</td><td><code>set a timer for 10 minutes</code> <code>cancel timers</code></td></tr>
+<tr><td>Reminders</td><td><code>remind me to drink water in 30 minutes</code></td></tr>
+<tr><td>Stopwatch</td><td><code>start stopwatch</code> <code>stopwatch</code> <code>stop stopwatch</code></td></tr>
+<tr><td>Focus</td><td><code>start pomodoro</code> (25 min) <code>take a break</code> (5 min)</td></tr>
+<tr><td>Daily briefing</td><td><code>daily briefing</code> gives time, date, weather, battery and task count.</td></tr>
+<tr><td>Repeat</td><td><code>do that again</code> <code>repeat that</code></td></tr></table></div></section>
+
+<section id="info"><h2>10. INFO AND LOOKUPS</h2>
+<div class="box"><table><tr><th>FEATURE</th><th>EXAMPLE COMMANDS</th></tr>
+<tr><td>Weather</td><td><code>what is the weather</code> <code>weather in London</code> (default city Peshawar)</td></tr>
+<tr><td>News</td><td><code>tell me the news</code> (BBC top five)</td></tr>
+<tr><td>Time and date</td><td><code>what time is it</code> <code>what is the date</code></td></tr>
+<tr><td>Web search</td><td><code>search black holes</code> <code>look up python tutorials</code></td></tr>
+<tr><td>YouTube</td><td><code>play lofi music</code> <code>open youtube</code> <code>youtube cats</code></td></tr>
+<tr><td>Websites</td><td><code>open google</code> <code>go to github.com</code></td></tr>
+<tr><td>Wikipedia</td><td><code>wikipedia black hole</code></td></tr>
+<tr><td>Dictionary</td><td><code>define serendipity</code> <code>what does ephemeral mean</code></td></tr>
+<tr><td>Unit converter</td><td><code>convert 10 km to miles</code> <code>5 kg to pounds</code> <code>100 f to c</code></td></tr>
+<tr><td>AI questions</td><td><code>why is the sky blue</code> <code>explain gravity</code>. Uses local Ollama (llama3.2) first, then the Claude API if a key is set. Remembers the last few turns.</td></tr></table></div></section>
+
+<section id="fun"><h2>11. MATH AND FUN</h2>
+<div class="box"><table><tr><th>FEATURE</th><th>EXAMPLE COMMANDS</th></tr>
+<tr><td>Voice math</td><td><code>what is 25 times 4</code> <code>15 percent of 200</code> <code>square root of 144</code> <code>12 squared</code> <code>2 to the power of 8</code> <code>100 divided by 8</code>. Uses a safe calculator, nothing else can run.</td></tr>
+<tr><td>Jokes</td><td><code>tell me a joke</code></td></tr>
+<tr><td>Coin / dice</td><td><code>flip a coin</code> <code>roll a dice</code></td></tr>
+<tr><td>Random number</td><td><code>random number between 5 and 50</code></td></tr></table></div></section>
+
+<section id="smart"><h2>12. SMART UNDERSTANDING</h2>
+<p>Jarvis tries several layers before giving up, so rough English still works:</p>
+<ul><li><b>Mishearing fixes:</b> "fire fox" becomes firefox, "volume app" becomes volume up, "why fi" becomes wifi.</li><li><b>Spelling repair:</b> "volum" becomes volume.</li><li><b>Related words:</b> "make sound big" becomes increase the volume.</li><li><b>Your own aliases</b> in <code>~/.jarvis/aliases.json</code>.</li><li><b>AI repair:</b> the AI brain rewrites a mis-heard sentence into a known command (only safe commands or a web search).</li><li><b>Asks first</b> when unsure: "Did you mean ...?"</li></ul>
+<h3>Your own commands</h3>
+<p>Edit <code>~/.jarvis/commands.json</code> to map a phrase to a shell command, for example <code>"open my project": "code ~/projects"</code>.</p></section>
+
+<section id="safe"><h2>13. SAFETY BUILT IN</h2>
+<ul><li>Dangerous actions (shut down, restart, kill app, delete file, clear tasks or notes, lock screen guesses) always ask yes or no first, valid for 20 seconds.</li><li>Smart matching and AI repair can never map to delete, kill or shutdown.</li><li>File commands are limited to three folders and delete goes to the trash.</li><li>Protected system processes cannot be killed.</li><li>The web API only accepts requests from Jarvis' own page (127.0.0.1:5000).</li><li>Brightness never drops to black.</li></ul></section>
+
+<section id="conf"><h2>14. SETTINGS YOU CAN CHANGE (ENVIRONMENT)</h2>
+<div class="box"><table><tr><th>VARIABLE</th><th>MEANING</th></tr>
+<tr><td>JARVIS_WAKE=1</td><td>Require "Hey Jarvis"</td></tr><tr><td>JARVIS_CITY</td><td>Default weather city</td></tr>
+<tr><td>JARVIS_STT</td><td>auto, whisper, google or vosk</td></tr><tr><td>JARVIS_WHISPER_MODEL</td><td>tiny.en, base.en, small.en, medium.en</td></tr>
+<tr><td>JARVIS_WHISPER_DEVICE</td><td>cpu or cuda</td></tr><tr><td>JARVIS_LANG</td><td>en-IN, en-US, en-GB</td></tr>
+<tr><td>JARVIS_MIC</td><td>Microphone number</td></tr><tr><td>JARVIS_SPEAK_TYPED</td><td>0 = typed replies silent</td></tr>
+<tr><td>JARVIS_AI_FIX</td><td>0 = disable AI sentence repair</td></tr><tr><td>JARVIS_RESTORE_MIC</td><td>0 = do not reopen the mic</td></tr>
+<tr><td>OLLAMA_URL, OLLAMA_MODEL</td><td>Local AI brain</td></tr><tr><td>ANTHROPIC_API_KEY</td><td>Claude as backup AI</td></tr></table></div>
+<h3>Tools Jarvis uses (Fedora)</h3>
+<p>wpctl, brightnessctl, playerctl, nmcli, bluetoothctl, gnome-screenshot, wl-clipboard, ydotool, kdeconnect, sox, pipewire-utils, xdg-utils, gio, espeak-ng. Run <span class="cmd">run diagnostics</span> to see what is missing.</p></section>
+
+<section id="api"><h2>15. BACKEND API</h2>
+<div class="box"><table><tr><th>ENDPOINT</th><th>JOB</th></tr>
+<tr><td>GET /</td><td>Serves the page with your saved settings injected</td></tr>
+<tr><td>GET /api/poll</td><td>New messages, status, mic, lock, mode, theme, speaking</td></tr>
+<tr><td>GET /api/sysinfo</td><td>CPU, RAM, disk, battery</td></tr>
+<tr><td>POST /api/command</td><td>Run a typed command</td></tr>
+<tr><td>POST /api/toggle_mic</td><td>Mic on or off</td></tr>
+<tr><td>POST /api/wake</td><td>Wake Jarvis like "Hey Jarvis"</td></tr>
+<tr><td>POST /api/stop_speaking</td><td>Cut off the voice</td></tr>
+<tr><td>GET/POST /api/ui</td><td>Theme and small UI prefs</td></tr>
+<tr><td>GET/POST /api/settings</td><td>Full customize panel</td></tr></table></div></section>
+
+<footer>J.A.R.V.I.S. // THE SILENT EXPLOIT BASE PROJECT FOR LEARNING</footer>
+</main></body></html>
