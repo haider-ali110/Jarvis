@@ -4,6 +4,7 @@ A voice and text assistant for your PC with a 3D hologram interface.
 `app.py` is the brain (Python, Flask, speech, system control). `index.html` is the face (three.js).
 
 Built for Fedora Linux. Windows has partial support.
+   [Full feature guide](https://haider-ali110.github.io/Jarvis/)
 
 ## Features
 
