@@ -1,0 +1,5 @@
+.venv-fedora/
+__pycache__/
+*.pyc
+.env
+*.wav

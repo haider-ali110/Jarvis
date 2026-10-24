@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.R.V.I.S. 3D Core</title>
+  <!-- app.py puts your saved settings here when it serves this page (so they survive restarts) -->
+  <script>window.__SRV = /*SRV*/null;</script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --rgb: 255, 24, 56;
+      --a: rgb(var(--rgb));
+      --bg: #050304;
+      --fs: 12px;
+      --fb: 'Share Tech Mono', monospace;
+      --line: rgba(var(--rgb), .4);
+      --muted: color-mix(in srgb, var(--a) 40%, #999)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      color: #f4dfe2;
+      font: var(--fs) var(--fb);
+      background: radial-gradient(ellipse at center, color-mix(in srgb, var(--a) 14%, var(--bg)) 0, var(--bg) 65%, #000 100%)
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: var(--scan, .4);
+      background: repeating-linear-gradient(transparent 0 3px, rgba(var(--rgb), .05) 4px)
+    }
+
+    body.clean #dock,
+    body.clean #topbtns {
+      display: none
+    }
+
+    body.q0::before {
+      display: none
+    }
+
+    #mic.on {
+      background: var(--a);
+      color: #120306;
+      box-shadow: 0 0 18px var(--a)
+    }
+
+    #ov {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 110;
+      pointer-events: none
+    }
+
+    #ic {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%
+    }
+
+    body.evilcur,
+    body.evilcur * {
+      cursor: none !important
+    }
+
+    #gl {
+      transition: opacity .5s, transform .6s
+    }
+
+    body.min #gl {
+      opacity: 0;
+      transform: scale(.1);
+      transform-origin: 100% 100%
+    }
+
+    body.min #dock,
+    body.min #topbtns,
+    body.min #season,
+    body.min #warn,
+    body.min::before,
+    body.min::after {
+      display: none !important
+    }
+
+    #orb {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 84px;
+      height: 84px;
+      z-index: 8;
+      display: none;
+      touch-action: none
+    }
+
+    body.min #orb {
+      display: block;
+      animation: orbin .5s ease-out
+    }
+
+    @keyframes orbin {
+      from {
+        transform: scale(0)
+      }
+    }
+
+    #orb canvas {
+      display: block
+    }
+
+    #minmsg {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      pointer-events: none;
+      color: var(--muted);
+      letter-spacing: 4px;
+      font-size: 11px;
+      text-align: center;
+      padding: 20px
+    }
+
+    body.min #minmsg {
+      display: grid
+    }
+
+    #season {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 34%;
+      text-align: center;
+      z-index: 6;
+      pointer-events: none;
+      font: 900 clamp(22px, 5vw, 58px) Orbitron, sans-serif;
+      letter-spacing: 14px;
+      color: var(--a);
+      text-shadow: 0 0 30px var(--a), 0 0 80px var(--a);
+      opacity: 0
+    }
+
+    #season.show {
+      animation: ann 2.8s ease-out
+    }
+
+    @keyframes ann {
+      0% {
+        opacity: 0;
+        letter-spacing: 44px
+      }
+
+      15% {
+        opacity: 1
+      }
+
+      70% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0;
+        letter-spacing: 14px
+      }
+    }
+
+    #flash {
+      position: fixed;
+      inset: 0;
+      z-index: 7;
+      pointer-events: none;
+      background: #ff2a3a;
+      opacity: 0
+    }
+
+    #boot h1 {
+      animation: bj .9s steps(2) infinite
+    }
+
+    @keyframes bj {
+      50% {
+        transform: translateX(5px);
+        text-shadow: -6px 0 #fff, 6px 0 #f00
+      }
+    }
+
+    #gl {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block
+    }
+
+    .btn {
+      background: rgba(var(--rgb), .08);
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      letter-spacing: 2px;
+      font-size: 11px
+    }
+
+    .btn:hover {
+      background: rgba(var(--rgb), .25);
+      box-shadow: 0 0 14px rgba(var(--rgb), .4)
+    }
+
+    #topbtns {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 5;
+      display: flex;
+      gap: 6px
+    }
+
+    #dock {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: min(660px, 94vw);
+      z-index: 4;
+      text-align: center
+    }
+
+    #cs {
+      color: var(--muted);
+      letter-spacing: 2px;
+      font-size: 11px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 8px #000
+    }
+
+    #cf {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(10, 6, 8, .9);
+      border: 1px solid var(--line)
+    }
+
+    #cf:focus-within {
+      border-color: var(--a);
+      box-shadow: 0 0 20px rgba(var(--rgb), .4)
+    }
+
+    #ci {
+      flex: 1;
+      min-width: 0;
+      background: none;
+      border: 0;
+      outline: 0;
+      padding: 9px 6px
+    }
+
+    #send {
+      background: var(--a);
+      color: #120306;
+      border: 0;
+      padding: 0 16px;
+      font-weight: 900
+    }
+
+    #send:disabled {
+      opacity: .5
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 8px
+    }
+
+    .chip {
+      background: rgba(10, 6, 8, .7);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 4px 9px;
+      font-size: 10px;
+      max-width: 170px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .chip:hover {
+      color: #fff;
+      border-color: var(--a)
+    }
+
+    #boot {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #030203;
+      display: grid;
+      place-items: center;
+      color: var(--a);
+      text-align: center;
+      transition: opacity .8s
+    }
+
+    #boot h1 {
+      font: 900 clamp(24px, 6vw, 48px) Orbitron, sans-serif;
+      letter-spacing: 8px;
+      margin: 0 0 10px;
+      text-shadow: 0 0 20px var(--a)
+    }
+
+    #boot p {
+      color: var(--muted);
+      letter-spacing: 3px
+    }
+
+    #warn {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      z-index: 5;
+      background: repeating-linear-gradient(-45deg, var(--a) 0 12px, #0a0204 12px 24px)
+    }
+
+    body.d1 #warn,
+    body.d2 #warn,
+    body.d3 #warn {
+      display: block
+    }
+
+    body.d2::after,
+    body.d3::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(var(--rgb), .35) 100%);
+      animation: alarm 2s ease-in-out infinite
+    }
+
+    body.d3::after {
+      animation-duration: .9s
+    }
+
+    @keyframes alarm {
+      50% {
+        opacity: .3
+      }
+    }
+
+    #dbg {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(0, 0, 0, .6);
+      display: none
+    }
+
+    #drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 61;
+      width: min(380px, 100%);
+      background: #0b0709;
+      border-left: 1px solid var(--a);
+      padding: 18px;
+      overflow-y: auto;
+      transform: translateX(105%);
+      transition: transform .3s;
+      scrollbar-width: thin;
+      scrollbar-color: var(--a) transparent
+    }
+
+    body.open #drawer {
+      transform: none
+    }
+
+    body.open #dbg {
+      display: block
+    }
+
+    .t {
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--a);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    details {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--a);
+      letter-spacing: 2px;
+      font-weight: 700;
+      padding: 4px 0
+    }
+
+    .f {
+      margin: 12px 0
+    }
+
+    .f label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-bottom: 5px
+    }
+
+    .f input[type=text],
+    .f select,
+    .f textarea {
+      width: 100%;
+      background: #11090c;
+      border: 1px solid var(--line);
+      padding: 7px;
+      outline: 0
+    }
+
+    .f input[type=range] {
+      width: 100%;
+      accent-color: var(--a)
+    }
+
+    .f input[type=color] {
+      width: 100%;
+      height: 32px;
+      background: #11090c;
+      border: 1px solid var(--line)
+    }
+
+    .f textarea {
+      min-height: 80px;
+      resize: vertical
+    }
+
+    .f input[type=checkbox] {
+      accent-color: var(--a);
+      width: 18px;
+      height: 18px
+    }
+
+    .f.ck label {
+      margin: 0;
+      align-items: center;
+      color: #f4dfe2
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      outline: 1px solid var(--line)
+    }
+
+    .dot:hover {
+      border-color: #fff
+    }
+
+    .acts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    /* ----- lock screen: covers the panels (so the chat is hidden) but leaves the command box usable ----- */
+    #lockov {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      text-align: center;
+      background: rgba(3, 1, 2, .97);
+      color: var(--a);
+      padding: 20px
+    }
+
+    #lockov h2 {
+      font: 900 clamp(26px, 6vw, 56px) Orbitron, sans-serif;
+      letter-spacing: 12px;
+      margin: 0 0 10px;
+      text-shadow: 0 0 24px var(--a)
+    }
+
+    #lockov p {
+      color: var(--muted);
+      letter-spacing: 4px;
+      margin: 0
+    }
+
+    body.locked #lockov {
+      display: grid
+    }
+
+    body.locked #dock {
+      z-index: 60
+    }
+
+    body.locked #topbtns,
+    body.locked #drawer,
+    body.locked #dbg,
+    body.locked .chips {
+      display: none !important
+    }
+  </style>
+</head>
+
+<body>
+  <div id="boot"><canvas id="ic"></canvas>
+    <div style="position:relative">
+      <h1 id="bt" style="opacity:0">J.A.R.V.I.S.</h1>
+      <p id="bp"></p>
+    </div>
+  </div>
+  <div id="season"></div>
+  <div id="flash"></div>
+  <div id="warn"></div>
+  <canvas id="gl"></canvas>
+  <div id="lockov">
+    <div>
+      <h2>LOCKED</h2>
+      <p>SAY OR TYPE THE PASSWORD</p>
+    </div>
+  </div>
+  <div id="topbtns"><button class="btn hidden" id="stopv" type="button" title="Stop talking">STOP</button><button
+      class="btn" id="vtog" type="button" title="Voice replies on/off">VOICE ON</button><button class="btn" id="open"
+      type="button">CUSTOMIZE</button><button class="btn" id="min" type="button"
+      title="Minimize (M)">&#8212;</button><button class="btn" id="max" type="button"
+      title="Fullscreen">&#9633;</button></div>
+  <div id="dock">
+    <div id="cs">CLICK THE CORE TO TOGGLE VOICE // VOICE STANDBY</div>
+    <form id="cf"><input id="ci" type="text" placeholder="Type a command or search the web..." autocomplete="off"
+        aria-label="Command"><button id="mic" type="button" class="btn" title="Toggle voice input (V)">MIC
+        OFF</button><button id="send" type="submit">SEND</button></form>
+    <div class="chips" id="quick"></div>
+    <div class="chips" id="recent"></div>
+  </div>
+  <canvas id="ov"></canvas>
+  <div id="minmsg">J.A.R.V.I.S. IS RUNNING IN THE BACKGROUND<br>CLICK THE EYE TO WAKE IT</div>
+  <div id="orb" title="Click to maximize, drag to move"><canvas id="orbc" width="84" height="84"></canvas></div>
+  <div id="dbg"></div>
+  <aside id="drawer" aria-label="Customize">
+    <div class="t">CUSTOMIZE <button class="btn" id="close" type="button"
+        style="float:right;padding:3px 8px">CLOSE</button></div>
+    <div class="f"><label>COLOR THEME</label>
+      <div class="dots" id="themes"></div>
+    </div>
+    <div id="form"></div>
+    <div class="acts">
+      <button class="btn" id="exp" type="button">EXPORT</button><button class="btn" id="imp"
+        type="button">IMPORT</button>
+      <button class="btn" id="lay" type="button">RESET LAYOUT</button><button class="btn" id="orbl" type="button">ORBIT
+        LAYOUT</button><button class="btn" id="shot" type="button">SCREENSHOT</button><button class="btn" id="fsb"
+        type="button">FULLSCREEN</button><button class="btn" id="rst" type="button">RESET
+        ALL</button><button class="btn" id="wipe" type="button">CLEAR HISTORY</button>
+    </div>
+    <input type="file" id="impf" accept="application/json" class="hidden">
+  </aside>
+
+  <!-- three.js: local copy first (works offline), then the CDN -->
+  <script src="/three.min.js"></script>
+  <script>window.THREE || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+  <script>
+    if (!window.THREE) { const p = document.getElementById('bp'), h = document.getElementById('bt'); if (h) h.style.opacity = 1; if (p) p.textContent = 'THREE.JS FAILED TO LOAD - CHECK INTERNET, OR SAVE three.min.js NEXT TO app.py'; throw new Error('THREE.js missing') }
+    const $ = id => document.getElementById(id);
+    /* ---- settings are kept in localStorage AND on the backend (~/.jarvis/ui_settings.json), so they survive restarts ---- */
+    const SRV = (window.__SRV && typeof window.__SRV === 'object') ? window.__SRV : null, mem = {};
+    if (SRV) for (const k of ['jarvis3d_cfg', 'jarvis_cmds']) if (SRV[k] != null) mem[k] = SRV[k];
+    let pushT = null, lockedUI = false, awaitUI = false, spkOn = true, uiTheme;
+    function pushSettings() {
+      clearTimeout(pushT); pushT = setTimeout(() => {
+        fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jarvis3d_cfg: store.get('jarvis3d_cfg', {}), jarvis_cmds: store.get('jarvis_cmds', []) }) }).catch(() => { })
+      }, 700)
+    }
+    const store = {
+      get(k, f) { if (k in mem) return mem[k]; try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : f } catch { return f } },
+      set(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)) } catch { } if (k === 'jarvis3d_cfg' || k === 'jarvis_cmds') pushSettings() }
+    };
+    const THEMES = { 'Danger Red': '#ff1838', 'Arc Blue': '#18b4ff', 'Toxic Green': '#2dff7a', 'Amber': '#ffb020', 'Violet': '#a855ff', 'Ice White': '#d8e6ff' };
+    const THEME_KEYS = { red: '#ff1838', blue: '#18b4ff', green: '#2dff7a', amber: '#ffb020', violet: '#a855ff', white: '#d8e6ff' }, TKEYS = Object.keys(THEME_KEYS);
+    function pushTheme(key) { uiTheme = key; fetch('/api/ui', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ theme: key }) }).catch(() => { }) }
+    const FONTS = { default: ["'Orbitron',sans-serif", "'Share Tech Mono',monospace"], terminal: ["'Courier New',monospace", "'Courier New',monospace"], clean: ['system-ui,sans-serif', 'system-ui,sans-serif'] };
+    /* widgets: id -> [x, y, tilt]  (all of these become editable in the drawer) */
+    const WID = {
+      title: ['TITLE BANNER', 0, 4, 0], cpu: ['CPU GAUGE', -6.2, 2.4, 18], ram: ['RAM GAUGE', -6.2, .1, 18], thr: ['THREAT GAUGE', -6.2, -2.2, 18],
+      info: ['INFO PANEL', 6.2, 3.6, -18], log: ['LOG PANEL', 6.2, 1.3, -18], chat: ['CHAT PANEL', 6.2, -1.9, -18], lat: ['LATENCY GAUGE', -3.4, 3.7, 0], fps: ['FPS GAUGE', 3.4, 3.7, 0], bat: ['BATTERY GAUGE', -3.4, 1.4, 0], clock: ['CLOCK PANEL', -6, -4.1, 18], stats: ['SESSION PANEL', 6.2, -4.1, -18]
+    };
+    const TT = { cpu: 'NEURAL LOAD', ram: 'MEMORY CORE', thr: 'THREAT INDEX', info: 'ACCESS NODE', log: 'INTRUSION LOG', chat: 'DIRECT LINE', lat: 'SIGNAL LAG', fps: 'PULSE RATE', bat: 'POWER CORE', clock: 'SYSTEM TIME', stats: 'OPERATIONS' };
+    const FXT = { none: 'Off', snow: 'Snow', rain: 'Rain', wind: 'Air / wind streaks', embers: 'Embers', fireflies: 'Fireflies', dust: 'Floating dust', petals: 'Petals', leaves: 'Dead leaves' };
+    const D = {
+      accent: '#ff1030', bg: '#000000', font: 'default', fs: 12, shape: 'icosa', rings: 4, size: 1, glow: .35, stars: 1800, grid: true, speed: 1, parallax: 1, panelA: .7, fxA: 'snow', fxAn: 1200, fxAs: 1, fxAz: .07, fxB: 'wind', fxBn: 60, fxBs: 1, fxBz: .05, wind: 1, fxCol: 'auto', wave: true, sway: 0, zoom: 9, scan: .4, flick: false, wire: true, hue: 0, hueSpin: 0, seasons: true, seasonLen: 18, eye: true, glitch: 1, ver: 5, eyeN: 10, cursor: true, curSize: 44, trail: true, trailGap: 36, batSize: 1, ambient: 1, intro: true, quality: 'high',
+      name: 'J.A.R.V.I.S.', sub: 'SAFETY PROTOCOLS DISABLED', bot: 'JARVIS', user: 'USER', danger: 2, sound: false, poll: 1000, quick: '',
+      lNet: 'UPLINK', lOs: 'HOST', lPort: 'GATEWAY', lVoice: 'VOICE', lMode: 'STATE', vOs: 'FEDORA LINUX', vPort: 'LOCALHOST:5000', vVoice: 'PIPER RYAN', vMode: 'UNRESTRICTED'
+    };
+    const LAYKEYS = [];
+    for (const [id, [, x, y, r]] of Object.entries(WID)) {
+      Object.assign(D, { [id + '_on']: true, [id + '_x']: x, [id + '_y']: y, [id + '_z']: 0, [id + '_s']: 1, [id + '_r']: r, [id + '_f']: 1 }); if (TT[id]) D[id + '_t'] = TT[id];
+      ['on', 'x', 'y', 'z', 's', 'r', 'f'].forEach(k => LAYKEYS.push(id + '_' + k))
+    }
+    ['lat', 'fps', 'bat'].forEach(i => D[i + '_s'] = .6);
+    const S = [['sec', 'LOOK'], ['quality', 'PERFORMANCE MODE', 'select', { auto: 'Auto (recommended)', low: 'Low (weak PC)', medium: 'Medium', high: 'High' }], ['accent', 'ACCENT COLOR', 'color'], ['bg', 'BACKGROUND', 'color'], ['font', 'FONT', 'select', { default: 'Orbitron + Mono', terminal: 'Terminal', clean: 'Clean sans' }],
+    ['fs', 'TEXT SIZE', 'range', 9, 18, 1], ['panelA', 'PANEL OPACITY', 'range', .1, 1, .05],
+    ['sec', '3D CORE'], ['shape', 'CORE SHAPE', 'select', { icosa: 'Icosahedron', knot: 'Torus knot', sphere: 'Sphere', cube: 'Cube', octa: 'Octahedron' }],
+    ['rings', 'ORBIT RINGS', 'range', 0, 8, 1], ['size', 'CORE SIZE', 'range', .5, 2, .1], ['glow', 'CORE GLOW', 'range', 0, 1, .05], ['stars', 'PARTICLES', 'range', 0, 4000, 200],
+    ['grid', 'FLOOR GRID', 'check'], ['speed', 'ANIMATION SPEED', 'range', .25, 3, .25], ['parallax', 'CAMERA PARALLAX', 'range', 0, 2, .1], ['wire', 'WIREFRAME CORE', 'check'], ['eye', 'WATCHING EYE', 'check'], ['glitch', 'GLITCH AMOUNT', 'range', 0, 3, .25], ['wave', 'EVENT SHOCKWAVES', 'check'],
+    ['sec', 'BACKGROUND EFFECTS'], ['seasons', 'AUTO SEASON CYCLE', 'check'], ['seasonLen', 'SECONDS PER SEASON', 'range', 6, 60, 2], ['fxA', 'LAYER 1 (cycle off)', 'select', FXT], ['fxAn', 'L1 AMOUNT', 'range', 0, 3000, 100], ['fxAs', 'L1 SPEED', 'range', .2, 3, .1], ['fxAz', 'L1 SIZE', 'range', .02, .25, .01],
+    ['fxB', 'LAYER 2', 'select', FXT], ['fxBn', 'L2 AMOUNT', 'range', 0, 3000, 100], ['fxBs', 'L2 SPEED', 'range', .2, 3, .1], ['fxBz', 'L2 SIZE', 'range', .02, .25, .01],
+    ['wind', 'WIND (- left / + right)', 'range', -3, 3, .1], ['fxCol', 'EFFECT COLOR', 'select', { auto: 'Auto', accent: 'Accent', white: 'White' }],
+    ['sec', 'CAMERA & SCREEN'], ['zoom', 'CAMERA DISTANCE', 'range', 5, 16, .5], ['sway', 'CAMERA SWAY', 'range', 0, 2, .1], ['scan', 'SCANLINES', 'range', 0, 1, .1],
+    ['flick', 'HOLOGRAM FLICKER', 'check'], ['hue', 'COLOR SHIFT (deg)', 'range', 0, 360, 5], ['hueSpin', 'AUTO COLOR CYCLE', 'range', 0, 60, 1],
+    ['sec', 'EVIL CURSOR & BATS'], ['cursor', 'EVIL CURSOR', 'check'], ['curSize', 'CURSOR SIZE', 'range', 24, 90, 2], ['trail', 'BAT TRAIL', 'check'], ['trailGap', 'TRAIL DENSITY (px gap)', 'range', 14, 140, 2], ['batSize', 'BAT SIZE', 'range', .5, 2.5, .1], ['ambient', 'AMBIENT BATS', 'range', 0, 3, .25], ['eyeN', 'BACKGROUND EYES', 'range', 0, 24, 1], ['intro', 'PLAY BAT INTRO', 'check']];
+    for (const [id, [n]] of Object.entries(WID)) {
+      S.push(['sec', n], [id + '_on', 'SHOW', 'check']); if (TT[id]) S.push([id + '_t', 'TITLE TEXT', 'text']);
+      S.push([id + '_x', 'LEFT / RIGHT', 'range', -10, 10, .1], [id + '_y', 'UP / DOWN', 'range', -6, 6, .1], [id + '_z', 'NEAR / FAR', 'range', -8, 6, .1],
+        [id + '_s', 'SIZE', 'range', .3, 2.5, .05], [id + '_r', 'TURN (deg)', 'range', -80, 80, 1], [id + '_f', 'FLOAT AMOUNT', 'range', 0, 3, .1])
+    }
+    S.push(['sec', 'INFO PANEL TEXT'], ['lNet', 'LABEL 1', 'text'], ['lOs', 'LABEL 2', 'text'], ['vOs', 'VALUE 2', 'text'], ['lPort', 'LABEL 3', 'text'], ['vPort', 'VALUE 3', 'text'],
+      ['lVoice', 'LABEL 4', 'text'], ['vVoice', 'VALUE 4', 'text'], ['lMode', 'LABEL 5', 'text'], ['vMode', 'VALUE 5', 'text'],
+      ['sec', 'SYSTEM'], ['name', 'SYSTEM NAME', 'text'], ['sub', 'SUBTITLE', 'text'], ['bot', 'ASSISTANT LABEL', 'text'], ['user', 'YOUR LABEL', 'text'],
+      ['danger', 'DANGER LEVEL', 'select', { 0: '0 - Off', 1: '1 - Warning', 2: '2 - Danger', 3: '3 - Extreme' }], ['sound', 'ALERT SOUNDS', 'check'],
+      ['poll', 'REFRESH (ms)', 'range', 500, 5000, 250], ['quick', 'QUICK COMMANDS (Label|command per line)', 'area']);
+    const REBUILD = new Set(['wire', 'accent', 'shape', 'rings', 'size', 'glow', 'stars', 'grid']);
+    let sv = store.get('jarvis3d_cfg', {}); if (sv.ver !== 5) sv = { quick: sv.quick || '' }; let cfg = { ...D, ...sv }, commands = store.get('jarvis_cmds', []);
+    const QT = [{ pr: .7, pm: .25, em: .4, sh: false, cap: 30, pt: 300, bats: 20, tg: 1.8 }, { pr: 1, pm: .5, em: .6, sh: false, cap: 0, pt: 200, bats: 50, tg: 1.3 }, { pr: Math.min(devicePixelRatio, 2), pm: 1, em: 1, sh: true, cap: 0, pt: 120, bats: 140, tg: 1 }];
+    const Q = { lvl: 1, ...QT[1], gap: 0 }, qIdx = () => cfg.quality === 'auto' ? 1 : { low: 0, medium: 1, high: 2 }[cfg.quality], QS = () => Math.round(cfg.stars * Q.pm);
+    let lastR = 0, autoT = performance.now() + 7000, fc = 0;
+    const state = { conn: 'CONNECTING', net: 'CHECKING', status: 'STARTING', threat: '--' }, logs = [], chats = [];
+    const FH = () => FONTS[cfg.font][0], FB = () => FONTS[cfg.font][1], fnt = (w, s, h) => `${w} ${Math.round(s)}px ${h ? FH() : FB()}`;
+
+    /* ---------- scene ---------- */
+    const canvas = $('gl'), renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(55, 1, .1, 200); cam.position.set(0, 0, 9);
+    const dyn = new THREE.Group(); scene.add(dyn);
+    let core, glow, coreMat, rings = [], micActive = false, threat = 0;
+    function build() {
+      while (dyn.children.length) { const o = dyn.children[0]; o.traverse(c => { c.geometry && c.geometry.dispose(); c.material && c.material.dispose() }); dyn.remove(o) }
+      const col = new THREE.Color(cfg.accent);
+      const geo = {
+        icosa: () => new THREE.IcosahedronGeometry(1.6, 1), knot: () => new THREE.TorusKnotGeometry(1.1, .35, 120, 16), sphere: () => new THREE.SphereGeometry(1.6, 20, 14),
+        cube: () => new THREE.BoxGeometry(2, 2, 2, 3, 3, 3), octa: () => new THREE.OctahedronGeometry(1.8, 2)
+      }[cfg.shape]();
+      coreMat = new THREE.MeshBasicMaterial({ color: col, wireframe: cfg.wire, transparent: true, opacity: .9 });
+      core = new THREE.Mesh(geo, coreMat);
+      glow = new THREE.Mesh(new THREE.SphereGeometry(1.2, 24, 24), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: cfg.glow, blending: THREE.AdditiveBlending, depthWrite: false }));
+      dyn.add(core, glow); rings = [];
+      for (let i = 0; i < cfg.rings; i++) {
+        const r = (2.4 + i * .55) * cfg.size, m = new THREE.Mesh(new THREE.TorusGeometry(r, .015 + (i % 2) * .012, 8, 120), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: Math.max(.25, .85 - i * .07) }));
+        m.rotation.set(Math.random() * 3, Math.random() * 3, 0); m.userData.s = (i % 2 ? -1 : 1) * (.15 + i * .07);
+        const d = new THREE.Mesh(new THREE.SphereGeometry(.07, 8, 8), new THREE.MeshBasicMaterial({ color: col })); d.position.x = r; m.add(d); dyn.add(m); rings.push(m)
+      }
+      if (QS() > 0) {
+        const p = new Float32Array(QS() * 3);
+        for (let i = 0; i < QS(); i++) {
+          const r = 8 + Math.random() * 24, a = Math.random() * 6.283, b = Math.acos(2 * Math.random() - 1);
+          p[i * 3] = r * Math.sin(b) * Math.cos(a); p[i * 3 + 1] = r * Math.sin(b) * Math.sin(a); p[i * 3 + 2] = r * Math.cos(b)
+        }
+        const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+        dyn.add(new THREE.Points(g, new THREE.PointsMaterial({ color: col, size: .06, transparent: true, opacity: .8, blending: THREE.AdditiveBlending, depthWrite: false })))
+      }
+      if (cfg.grid) { const g = new THREE.GridHelper(50, 50, col, col); g.position.y = -5; g.material.transparent = true; g.material.opacity = .16; dyn.add(g) }
+    }
+
+    /* ---------- background effects, shockwaves, extra state ---------- */
+    let fpsV = 60, latMs = 0, batOk = false, shot = false, hueAcc = 0; const T0 = Date.now(), cnt = { cmd: 0, rep: 0, peak: 0 };
+    const GT = { thr: () => state.threat, lat: () => latMs + 'ms', fps: () => Math.round(fpsV) + '', bat: q => batOk ? Math.round(q.cur) + '%' : 'N/A' };
+    const FXL = ['A', 'B'].map(k => ({ k, m: null, h: null, rs: null, ph: null })), FXC = { snow: '#ffffff', rain: '#9fd4ff', embers: '#ffb020' };
+    function buildFx() {
+      FXL.forEach(L => {
+        if (L.m) { scene.remove(L.m); L.m.geometry.dispose(); L.m.material.dispose(); L.m = null }
+        const E = fxEff(L), type = E.type, n = E.n; if (type === 'none' || !n) return;
+        const line = type === 'rain' || type === 'wind', h = new Float32Array(n * 3); L.rs = new Float32Array(n); L.ph = new Float32Array(n);
+        for (let i = 0; i < n; i++) { h[i * 3] = (Math.random() - .5) * 28; h[i * 3 + 1] = (Math.random() - .5) * 16; h[i * 3 + 2] = Math.random() * 16 - 6; L.rs[i] = Math.random(); L.ph[i] = Math.random() * 6.28 }
+        L.h = h; const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * (line ? 6 : 3)), 3));
+        const c = E.col, o = { color: c, transparent: true, opacity: line ? .4 : .85, blending: THREE.AdditiveBlending, depthWrite: false };
+        L.m = line ? new THREE.LineSegments(g, new THREE.LineBasicMaterial(o)) : new THREE.Points(g, new THREE.PointsMaterial({ ...o, size: E.sz }));
+        L.m.frustumCulled = false; scene.add(L.m)
+      });
+    }
+    function stepFx(t, dt) {
+      FXL.forEach(L => {
+        if (!L.m) return; const E = fxEff(L), type = E.type, n = E.n, st = dt * cfg['fx' + L.k + 's'], w = E.w, h = L.h, line = type === 'rain' || type === 'wind', p = L.m.geometry.attributes.position.array; L.m.material.opacity = (line ? .4 : .85) * Math.min(1, fadeT);
+        for (let i = 0; i < n; i++) {
+          let x = h[i * 3], y = h[i * 3 + 1], z = h[i * 3 + 2]; const s = L.rs[i], f = L.ph[i];
+          if (type === 'snow') { y -= (.8 + s) * st; x += (w * 1.2 + Math.sin(t + f) * .4) * st }
+          else if (type === 'rain') { y -= 14 * st; x += w * 3 * st }
+          else if (type === 'wind') { x += (w + (w < 0 ? -1 : 1)) * (2 + s * 3) * st; y += Math.sin(t * 1.3 + f) * .2 * st }
+          else if (type === 'petals') { y -= (.5 + s * .6) * st; x += (w * .8 + Math.sin(t * .8 + f) * .9) * st; z += Math.cos(t * .6 + f) * .3 * st } else if (type === 'leaves') { y -= (.7 + s * .7) * st; x += (w * 1.5 + Math.sin(t * 1.5 + f) * 1.2) * st } else if (type === 'embers') { y += (.6 + s) * st; x += (w * .8 + Math.sin(t * 2 + f) * .5) * st }
+          else { x += (Math.sin(t * .5 + f) * .6 + w * .3) * st; y += Math.cos(t * .4 + f * 1.3) * .5 * st; z += Math.sin(t * .3 + f * .7) * .4 * st }
+          if (y < -8) y = 8; else if (y > 8) y = -8; if (x > 14) x = -14; else if (x < -14) x = 14; h[i * 3] = x; h[i * 3 + 1] = y; h[i * 3 + 2] = z;
+          if (line) { const k = i * 6, dx = type === 'rain' ? w * .2 : (w < 0 ? -1 : 1) * 2, dy = type === 'rain' ? .8 : 0; p[k] = x; p[k + 1] = y; p[k + 2] = z; p[k + 3] = x - dx; p[k + 4] = y + dy; p[k + 5] = z }
+          else { p[i * 3] = x; p[i * 3 + 1] = y; p[i * 3 + 2] = z }
+        }
+        L.m.geometry.attributes.position.needsUpdate = true
+      })
+    }
+    const SEAS = [{ n: 'WINTER', t: 'WINTER PROTOCOL', a: 'snow', b: 'wind', w: 1.5, ca: '#ffe0e4', cb: '#ff1838' }, { n: 'SPRING', t: 'SPRING BLOOM', a: 'petals', b: 'fireflies', w: .6, ca: '#ff3d6e', cb: '#ff1838' },
+    { n: 'SUMMER', t: 'SUMMER FIRE', a: 'embers', b: 'dust', w: .2, ca: '#ff6a00', cb: '#ff2a00' }, { n: 'AUTUMN', t: 'AUTUMN DECAY', a: 'leaves', b: 'wind', w: -1.8, ca: '#b01428', cb: '#ff1838' },
+    { n: 'STORM', t: 'STORM OVERRIDE', a: 'rain', b: 'wind', w: 2.5, ca: '#ff3030', cb: '#ff1838' }].map((x, i) => ({ ...x, i }));
+    const SZT = { snow: .07, petals: .17, leaves: .2, embers: .08, fireflies: .12, dust: .05 }; let SEA = null, fadeT = 1, glitchOn = false, glitchUntil = 0;
+    function fxEff(L) {
+      const n = Math.round(cfg['fx' + L.k + 'n'] * Q.pm);
+      if (cfg.seasons && SEA) { const type = L.k === 'A' ? SEA.a : SEA.b; return { type, n, w: SEA.w, col: L.k === 'A' ? SEA.ca : SEA.cb, sz: SZT[type] || .06 } }
+      const type = cfg['fx' + L.k]; return { type, n, w: cfg.wind, col: cfg.fxCol === 'white' ? '#ffffff' : cfg.fxCol === 'accent' ? cfg.accent : (FXC[type] || cfg.accent), sz: cfg['fx' + L.k + 'z'] }
+    }
+    function announce(t) { const e = $('season'); e.textContent = t; e.classList.remove('show'); void e.offsetWidth; e.classList.add('show') }
+    function flash() { const f = $('flash'); f.style.transition = 'none'; f.style.opacity = .45; setTimeout(() => { f.style.transition = 'opacity .5s'; f.style.opacity = 0 }, 70); pulse() }
+    /* watching eye: follows the cursor, blinks, narrows with threat */
+    const eye = new THREE.Group(); scene.add(eye);
+    const em = (c, o, add) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, side: THREE.DoubleSide, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending });
+    const eSclera = new THREE.Mesh(new THREE.CircleGeometry(.95, 48), em(0xff1030, .2, 1)), eIris = new THREE.Mesh(new THREE.RingGeometry(.45, .9, 48), em(0xff1030, .85, 1)),
+      eRim = new THREE.Mesh(new THREE.RingGeometry(.93, .98, 64), em(0xff1030, 1, 1)), ePup = new THREE.Mesh(new THREE.CircleGeometry(.55, 32), em(0x000000, .96, 0));
+    ePup.renderOrder = 5; ePup.scale.set(.2, 1, 1); eye.add(eSclera, eIris, eRim, ePup); eye.position.z = 2.2; let eyeT = 3, eyeB = 0;
+    function stepEye(dt) {
+      eye.visible = !!cfg.eye; if (!cfg.eye) return; eye.scale.setScalar(cfg.size * 1.05); eyeT -= dt; if (eyeT < 0) { eyeB = .18; eyeT = 3 + Math.random() * 4 }
+      let k = 0; if (eyeB > 0) { eyeB -= dt; k = Math.sin(Math.max(0, eyeB) / .18 * Math.PI) } eye.scale.y *= 1 - k * .95;
+      eIris.position.set(tx * .1, -ty * .08, 0); ePup.position.set(tx * .28, -ty * .22, .01); ePup.scale.x = micActive ? .5 : .16 + (1 - threat) * .12
+    }
+    const waves = [];
+    function pulse() { if (!cfg.wave) return; const m = new THREE.Mesh(new THREE.RingGeometry(.95, 1, 64), new THREE.MeshBasicMaterial({ color: cfg.accent, transparent: true, opacity: .8, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })); m.userData.t = 0; scene.add(m); waves.push(m) }
+    function stepWaves(dt) {
+      for (let i = waves.length - 1; i >= 0; i--) {
+        const w = waves[i], u = w.userData; u.t += dt; w.scale.setScalar(cfg.size * (1 + u.t * 7)); w.material.opacity = Math.max(0, .8 * (1 - u.t / 1.5));
+        if (u.t > 1.5) { scene.remove(w); w.geometry.dispose(); w.material.dispose(); waves.splice(i, 1) }
+      }
+    }
+
+    /* ---------- 3D widgets: canvas-textured panels + 3D gauges ---------- */
+    const obj = {}, P = {}, G = {}, ARC = Math.PI * 1.5, PX = 170;
+    function frame(c, x, title) {
+      const W = c.width, H = c.height, a = cfg.accent; x.clearRect(0, 0, W, H); x.fillStyle = `rgba(12,7,9,${cfg.panelA})`; x.fillRect(0, 0, W, H);
+      x.strokeStyle = a + '66'; x.lineWidth = 2; x.strokeRect(1, 1, W - 2, H - 2); x.strokeStyle = a; x.lineWidth = 6;
+      [[0, 0, 1, 1], [W, 0, -1, 1], [0, H, 1, -1], [W, H, -1, -1]].forEach(([px, py, dx, dy]) => { x.beginPath(); x.moveTo(px + dx * 36, py); x.lineTo(px, py); x.lineTo(px, py + dy * 36); x.stroke() });
+      if (title) {
+        x.textAlign = 'left'; x.fillStyle = a; x.shadowColor = a; x.shadowBlur = Q.sh ? (10) : 0; x.font = fnt('700', cfg.fs * 2.5, 1); x.fillText(title, 30, 58); x.shadowBlur = Q.sh ? (0) : 0;
+        x.fillStyle = a + '66'; x.fillRect(30, 78, W - 60, 2)
+      }
+    }
+    function wrap(x, t, mw) { const out = []; String(t).split('\n').forEach(p => { let l = ''; p.split(' ').forEach(w => { const n = l ? l + ' ' + w : w; if (x.measureText(n).width > mw && l) { out.push(l); l = w } else l = n }); out.push(l) }); return out }
+    function paintList(c, x, title, entries) {
+      frame(c, x, title); const fs = cfg.fs * 2.3, lh = fs * 1.4, max = Math.max(1, Math.floor((c.height - 130) / lh)); x.font = fnt('400', fs, 0); x.textAlign = 'left';
+      const lines = []; entries.forEach(e => { if (e.h) lines.push({ t: e.h, c: cfg.accent }); wrap(x, e.t, c.width - 60).forEach(t => lines.push({ t, c: e.c || '#f4dfe2' })) });
+      lines.slice(-max).forEach((l, i) => { x.fillStyle = l.c; x.fillText(l.t, 30, 118 + fs + i * lh) })
+    }
+    const DRAW = {
+      title(c, x) {
+        frame(c, x); const W = c.width, H = c.height; x.textAlign = 'center'; x.fillStyle = cfg.accent; x.shadowColor = cfg.accent; x.shadowBlur = Q.sh ? (20) : 0; x.font = fnt('900', H * .38, 1); x.fillText(cfg.name, W / 2, H * .52); if (glitchOn) { x.globalAlpha = .8; x.fillStyle = '#fff'; x.fillText(cfg.name, W / 2 - 8, H * .52 + 3); x.fillStyle = '#ff0030'; x.fillText(cfg.name, W / 2 + 8, H * .52 - 3); x.globalAlpha = 1 }
+        x.shadowBlur = Q.sh ? (0) : 0; x.fillStyle = '#b99ba0'; x.font = fnt('400', H * .15, 0); x.fillText(cfg.sub + '  //  ' + state.conn + '  //  ' + state.status + (state.season ? '  //  ' + state.season : ''), W / 2, H * .84)
+      },
+      info(c, x) {
+        frame(c, x, cfg.info_t); const fs = cfg.fs * 2.3, rows = [[cfg.lNet, state.net], [cfg.lOs, cfg.vOs], [cfg.lPort, cfg.vPort], [cfg.lVoice, cfg.vVoice], [cfg.lMode, cfg.vMode]],
+          lh = (c.height - 110) / rows.length; x.font = fnt('400', fs, 0); x.textAlign = 'left';
+        rows.forEach(([a, b], i) => { const y = 108 + lh * (i + .7); x.fillStyle = '#b99ba0'; x.fillText(a, 30, y); x.fillStyle = cfg.accent; x.fillText(b, c.width * .45, y) })
+      },
+      log(c, x) { paintList(c, x, cfg.log_t, logs.map(t => ({ t: '> ' + t, c: '#b99ba0' }))) },
+      clock(c, x) {
+        frame(c, x, cfg.clock_t); const d = new Date(); x.textAlign = 'right'; x.fillStyle = '#b99ba0'; x.font = fnt('400', cfg.fs * 2, 0); x.fillText(d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }), c.width - 30, 58);
+        x.textAlign = 'center'; x.fillStyle = cfg.accent; x.shadowColor = cfg.accent; x.shadowBlur = Q.sh ? (14) : 0; x.font = fnt('900', c.height * .34, 1); x.fillText(d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), c.width / 2, c.height * .86); x.shadowBlur = 0
+      },
+      stats(c, x) {
+        frame(c, x, cfg.stats_t); const up = Math.floor((Date.now() - T0) / 1000), f = n => String(n).padStart(2, '0'),
+          rows = [['UPTIME', `${f(Math.floor(up / 3600))}:${f(Math.floor(up / 60) % 60)}:${f(up % 60)}`], ['COMMANDS SENT', cnt.cmd], ['REPLIES', cnt.rep], ['THREAT PEAK', cnt.peak + '%']],
+          fs = cfg.fs * 2.2, lh = (c.height - 110) / rows.length; x.font = fnt('400', fs, 0); x.textAlign = 'left';
+        rows.forEach(([a, b], i) => { const y = 108 + lh * (i + .7); x.fillStyle = '#b99ba0'; x.fillText(a, 30, y); x.fillStyle = cfg.accent; x.fillText(b, c.width * .58, y) })
+      },
+      chat(c, x) { paintList(c, x, cfg.chat_t, chats.map(m => ({ h: m.who === 'USER' ? cfg.user : cfg.bot, t: m.t }))) }
+    };
+    const SZ = { title: [5, 1.2], info: [4, 1.7], log: [4, 2.4], chat: [4, 2.9], clock: [3.2, 1.1], stats: [4, 1.7] };
+    for (const id in SZ) {
+      const [w, h] = SZ[id], cv = document.createElement('canvas'); cv.width = w * PX; cv.height = h * PX; const tex = new THREE.CanvasTexture(cv); tex.minFilter = THREE.LinearFilter;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
+      scene.add(m); obj[id] = m; P[id] = { cv, x: cv.getContext('2d'), tex, dirty: true, t: 0 }
+    }
+    function mkGauge(id) {
+      const g = new THREE.Group(), mat = o => new THREE.MeshBasicMaterial({ color: cfg.accent, transparent: true, opacity: o, side: THREE.DoubleSide });
+      const track = new THREE.Mesh(new THREE.TorusGeometry(.7, .05, 8, 64, ARC), mat(.25)), fill = new THREE.Mesh(new THREE.TorusGeometry(.7, .09, 10, 64, .01), mat(1));
+      [track, fill].forEach(m => { m.scale.x = -1; m.rotation.z = Math.PI / 4 });
+      const spin = new THREE.Mesh(new THREE.TorusGeometry(.95, .012, 6, 80), mat(.6)), orb = new THREE.Mesh(new THREE.IcosahedronGeometry(.3, 0), new THREE.MeshBasicMaterial({ color: cfg.accent, wireframe: true }));
+      const cv = document.createElement('canvas'); cv.width = 420; cv.height = 150; const tex = new THREE.CanvasTexture(cv); tex.minFilter = THREE.LinearFilter;
+      const lab = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .86), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); lab.position.y = -1.3;
+      g.add(track, fill, spin, orb, lab); scene.add(g); obj[id] = g; G[id] = { fill, spin, orb, cv, x: cv.getContext('2d'), tex, cur: 0, tgt: 0, built: -1, txt: '', dirty: true, t: 0 }
+    }
+    ['cpu', 'ram', 'thr', 'lat', 'fps', 'bat'].forEach(mkGauge);
+    function drawGauge(id, txt) {
+      const q = G[id], c = q.cv, x = q.x; x.clearRect(0, 0, 420, 150); x.fillStyle = `rgba(12,7,9,${cfg.panelA * .85})`; x.fillRect(0, 0, 420, 150);
+      x.strokeStyle = cfg.accent + '88'; x.lineWidth = 2; x.strokeRect(1, 1, 418, 148); x.textAlign = 'center'; x.fillStyle = '#b99ba0'; x.font = fnt('400', cfg.fs * 2.2, 0); x.fillText(cfg[id + '_t'], 210, 44);
+      x.fillStyle = cfg.accent; x.shadowColor = cfg.accent; x.shadowBlur = Q.sh ? (14) : 0; x.font = fnt('900', 58, 1); x.fillText(txt, 210, 116); x.shadowBlur = Q.sh ? (0) : 0; q.tex.needsUpdate = true
+    }
+    function markAll() { Object.values(P).forEach(p => p.dirty = true); Object.values(G).forEach(q => q.dirty = true) }
+    const dirty = id => { if (P[id]) P[id].dirty = true };
+    function recolor() { const c = new THREE.Color(cfg.accent); eye.children.forEach(o => { if (o !== ePup) o.material.color.copy(c) }); EY.forEach(e => e.g.children.forEach((o, i) => { if (i !== 3) o.material.color.copy(c) })); Object.values(G).forEach(q => q.fill.parent.traverse(o => { if (o.material && o.material.color) o.material.color.copy(c) })) }
+
+    /* ---------- render loop ---------- */
+    function resize() { renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix() }
+    addEventListener('resize', resize);
+    let mx = 0, my = 0, tx = 0, ty = 0; const clock = new THREE.Clock(), deg = THREE.MathUtils.degToRad;
+    addEventListener('pointermove', e => { mx = (e.clientX / innerWidth - .5) * 2; my = (e.clientY / innerHeight - .5) * 2 });
+    const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+    addEventListener('pointerdown', e => {
+      if (e.target !== canvas || !core) return; mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, cam);
+      if (ray.intersectObject(core).length || ray.intersectObject(glow).length || (cfg.eye && ray.intersectObject(eSclera).length)) toggleVoice()
+    });
+    function loop() {
+      requestAnimationFrame(loop); if (MIN || introRun) { clock.getDelta(); return } const pn = performance.now(); if (pn - lastR < Q.gap) return; lastR = pn;
+      const raw = clock.getDelta(), dt = Math.min(raw, .05), t = clock.elapsedTime, sp = cfg.speed, now = performance.now(), ax = Math.min(1, cam.aspect / 1.78);
+      if (cfg.seasons && introDone) { const idx = Math.floor((t - tIntro) / cfg.seasonLen) % SEAS.length; if (!SEA || SEA.i !== idx) { SEA = SEAS[idx]; fadeT = 0; buildFx(); announce(SEA.t); setState('season', SEA.n); pulse() } }
+      else if (SEA) { SEA = null; buildFx(); setState('season', '') }
+      fadeT += dt / 1.5; if (SEA && SEA.n === 'STORM' && Math.random() < .008) flash();
+      fpsV += (1 / Math.max(raw, .001) - fpsV) * .05; if ((fc++ & 15) === 0) G.fps.tgt = Math.min(100, fpsV / 60 * 100); if (cfg.quality === 'auto' && Q.lvl > 0 && now > autoT && fpsV < 38) { autoT = now + 5000; setQuality(Q.lvl - 1, true) } tx += (mx - tx) * .05; ty += (my - ty) * .05; cam.position.x = tx * 2.4 * cfg.parallax + Math.sin(t * .25) * cfg.sway * 2; cam.position.y = -ty * 1.5 * cfg.parallax; cam.position.z = cfg.zoom;
+      if (+cfg.danger === 3) { cam.position.x += (Math.random() - .5) * .05; cam.position.y += (Math.random() - .5) * .05 }
+      cam.lookAt(0, 0, 0);
+      dyn.rotation.y += dt * .12 * sp; core.rotation.x += dt * .25 * sp; core.rotation.z += dt * .1 * sp;
+      const beat = 1 + Math.sin(t * (micActive ? 8 : 1.5 + threat * 5)) * (micActive ? .07 : .025);
+      core.scale.setScalar(cfg.size * beat); glow.scale.setScalar(cfg.size * beat * (micActive ? 1.25 : 1)); glow.material.opacity = cfg.glow * (micActive ? 2 : 1); coreMat.opacity = (cfg.wire ? 1 : .45) * (micActive ? 1 : .8);
+      rings.forEach(r => r.rotation.z += dt * r.userData.s * sp * (micActive ? 2.5 : 1)); stepFx(t, dt); stepWaves(dt); stepEye(dt); stepEyes(t, dt);
+      let i = 0;
+      for (const id in WID) {
+        const o = obj[id]; i++; o.visible = !!cfg[id + '_on'];
+        o.position.set(cfg[id + '_x'] * ax, cfg[id + '_y'] + Math.sin(t * .9 + i) * .08 * cfg[id + '_f'], cfg[id + '_z'] + Math.cos(t * .7 + i) * .1 * cfg[id + '_f']);
+        o.scale.setScalar(cfg[id + '_s']); o.rotation.y = deg(cfg[id + '_r']) + mx * .1; o.rotation.x = -ty * .05; if (o.material) o.material.opacity = cfg.flick && Math.random() < .05 ? .4 + Math.random() * .3 : 1
+      }
+      for (const id in P) { const p = P[id]; if (p.dirty && now - p.t > Q.pt) { p.dirty = false; p.t = now; DRAW[id](p.cv, p.x); p.tex.needsUpdate = true } }
+      for (const id in G) {
+        const q = G[id]; q.cur += (q.tgt - q.cur) * .08;
+        if (Math.abs(q.cur - q.built) > 1.5) { q.fill.geometry.dispose(); q.fill.geometry = new THREE.TorusGeometry(.7, .09, 10, 64, Math.max(.01, q.cur / 100 * ARC)); q.built = q.cur }
+        q.spin.rotation.x += dt; q.spin.rotation.y += dt * .6; q.orb.rotation.y += dt * sp; q.orb.rotation.x += dt * .7 * sp; q.orb.scale.setScalar(.6 + q.cur / 100 * .9);
+        const txt = GT[id] ? GT[id](q) : Math.round(q.cur) + '%'; if ((txt !== q.txt || q.dirty) && now - q.t > 400) { q.txt = txt; q.dirty = false; q.t = now; drawGauge(id, txt) }
+      }
+      renderer.render(scene, cam);
+      if (shot) { shot = false; canvas.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'jarvis3d.png'; a.click() }) }
+      hueAcc += dt * cfg.hueSpin;
+      if (cfg.glitch && !glitchOn && Math.random() < .004 * cfg.glitch) { glitchOn = true; glitchUntil = now + 90 + Math.random() * 130; dirty('title') }
+      if (glitchOn && now > glitchUntil) { glitchOn = false; dirty('title') }
+      if (glitchOn || canvas.style.transform) canvas.style.transform = glitchOn ? `translate(${(Math.random() - .5) * 26}px,${(Math.random() - .5) * 6}px) skewX(${(Math.random() - .5) * 4}deg)` : '';
+      { const fv = (((cfg.hue || cfg.hueSpin) ? `hue-rotate(${(cfg.hue + hueAcc) % 360}deg)` : '')).trim(); if (canvas.style.filter !== fv) canvas.style.filter = fv }
+    }
+
+    /* ---------- settings drawer ---------- */
+    function applyUI() {
+      const s = document.documentElement.style, n = parseInt((/^#?([0-9a-f]{6})$/i.exec(cfg.accent) || [0, 'ff1838'])[1], 16);
+      s.setProperty('--rgb', `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`); s.setProperty('--bg', cfg.bg); s.setProperty('--fs', cfg.fs + 'px'); s.setProperty('--fb', FB()); s.setProperty('--scan', cfg.scan); document.body.classList.toggle('evilcur', !!cfg.cursor && !COARSE);
+      for (let i = 1; i <= 3; i++)document.body.classList.toggle('d' + i, +cfg.danger === i);
+      /* FIX: the boot screen is removed after the intro, so $('bt') can be null here. It used to throw and stop the
+         rest of this function (panels never repainted, quick commands never updated, slider numbers froze). */
+      const bt = $('bt'); if (bt) bt.textContent = cfg.name; document.title = cfg.name + ' 3D Core'; recolor(); markAll(); renderQuick();
+      document.querySelectorAll('.dot').forEach(d => d.style.borderColor = d.dataset.c.toLowerCase() === cfg.accent.toLowerCase() ? '#fff' : 'transparent')
+    }
+    function change(k, v) { cfg[k] = v; store.set('jarvis3d_cfg', cfg); if (REBUILD.has(k)) build(); if (k.startsWith('fx') || k === 'accent') buildFx(); if (k === 'eyeN') buildEyes(); if (k === 'quality') setQuality(qIdx()); applyUI(); if (k === 'poll') restartPoll(); if (k === 'sound') beep(660, .1); const l = $('v-' + k); if (l) l.textContent = v }
+    function buildDrawer() {
+      let ti = 0;
+      for (const [n, c] of Object.entries(THEMES)) {
+        const key = TKEYS[ti++], b = document.createElement('button'); b.type = 'button'; b.className = 'dot'; b.title = n; b.dataset.c = c; b.style.background = c;
+        b.onclick = () => { change('accent', c); $('i-accent').value = c; pushTheme(key) }; $('themes').appendChild(b)
+      }
+      let box = $('form');
+      for (const [k, label, type, ...o] of S) {
+        if (k === 'sec') { box = document.createElement('details'); box.open = label === 'LOOK'; const sm = document.createElement('summary'); sm.textContent = label; box.appendChild(sm); $('form').appendChild(box); continue }
+        const f = document.createElement('div'); f.className = 'f' + (type === 'check' ? ' ck' : ''), l = document.createElement('label'); l.textContent = label; let el;
+        if (type === 'select') { el = document.createElement('select'); for (const [v, t] of Object.entries(o[0])) el.add(new Option(t, v)) }
+        else if (type === 'area') el = document.createElement('textarea');
+        else { el = document.createElement('input'); el.type = type === 'check' ? 'checkbox' : type; if (type === 'range') { [el.min, el.max, el.step] = o } }
+        el.id = 'i-' + k; if (type === 'check') el.checked = cfg[k]; else el.value = cfg[k];
+        if (type === 'range') { const sp = document.createElement('span'); sp.id = 'v-' + k; sp.textContent = cfg[k]; l.appendChild(sp) }
+        if (type === 'check') l.appendChild(el);
+        el.addEventListener(type === 'select' || type === 'check' ? 'change' : 'input', () => { const v = type === 'check' ? el.checked : (type === 'range' || k === 'danger') ? +el.value : el.value; change(k, v); if (k === 'danger' && v === 3) beep(300, .2) });
+        f.appendChild(l); if (type !== 'check') f.appendChild(el); box.appendChild(f)
+      }
+    }
+    function syncDrawer() { for (const [k, , type] of S) { if (k === 'sec') continue; const el = $('i-' + k); if (!el) continue; type === 'check' ? el.checked = cfg[k] : el.value = cfg[k]; const v = $('v-' + k); if (v) v.textContent = cfg[k] } }
+    const closeD = () => document.body.classList.remove('open');
+    $('open').onclick = () => { if (!lockedUI) document.body.classList.add('open') }; $('close').onclick = closeD; $('dbg').onclick = closeD;
+    const save = () => { store.set('jarvis3d_cfg', cfg); build(); buildFx(); buildEyes(); applyUI(); syncDrawer() };
+    $('rst').onclick = () => { cfg = { ...D }; save(); logSys('SETTINGS RESET') };
+    $('lay').onclick = () => { LAYKEYS.forEach(k => cfg[k] = D[k]); save(); logSys('LAYOUT RESET') };
+    /* FIX: this button used id="orb", the same id as the minimized eye, so the click handler was attached to the wrong element */
+    $('orbl').onclick = () => {
+      const ids = Object.keys(WID).filter(i => i !== 'title'); ids.forEach((id, i) => {
+        const a = (i + .5) / ids.length * 6.283; cfg[id + '_x'] = +(Math.cos(a) * 7).toFixed(1); cfg[id + '_y'] = +(Math.sin(a) * 3.4).toFixed(1);
+        cfg[id + '_r'] = Math.round(-Math.cos(a) * 40); cfg[id + '_s'] = ['lat', 'fps', 'bat'].includes(id) ? .6 : .85
+      }); save(); logSys('ORBIT LAYOUT APPLIED')
+    };
+    $('shot').onclick = () => { shot = true };
+    $('fsb').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    $('wipe').onclick = () => { commands = []; store.set('jarvis_cmds', commands); renderRecent(); logSys('LOCAL HISTORY CLEARED') };
+    $('exp').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' })); a.download = 'jarvis3d-settings.json'; a.click(); URL.revokeObjectURL(a.href) };
+    $('imp').onclick = () => $('impf').click();
+    $('impf').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { cfg = { ...D, ...JSON.parse(await f.text()) }; save(); logSys('SETTINGS IMPORTED') } catch { logSys('IMPORT FAILED: INVALID FILE') } e.target.value = '' };
+
+    /* ---------- sound + data ---------- */
+    let ac = null;
+    function beep(f = 880, d = .08) {
+      if (!cfg.sound) return; try {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume();
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = 'square'; o.frequency.value = f; g.gain.setValueAtTime(.035, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + d);
+        o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d)
+      } catch { }
+    }
+    function logSys(m) { logs.push(`[${new Date().toLocaleTimeString()}] ${m}`); if (logs.length > 60) logs.shift(); dirty('log') }
+    function logChat(who, t) { chats.push({ who, t }); if (chats.length > 60) chats.shift(); dirty('chat') }
+    function setState(k, v) { if (state[k] !== v) { state[k] = v; dirty('title'); dirty('info') } }
+
+    /* ---------- lock screen + password input ---------- */
+    function syncInput() {
+      const sec = lockedUI || awaitUI, ci = $('ci'); ci.type = sec ? 'password' : 'text'; ci.autocomplete = sec ? 'new-password' : 'off';
+      ci.placeholder = lockedUI ? 'LOCKED - type the password...' : awaitUI ? 'Type the password...' : 'Type a command or search the web...'
+    }
+    function setLocked(v) {
+      if (v === lockedUI) return; lockedUI = v; document.body.classList.toggle('locked', v);
+      if (v) { closeD(); if (MIN) setMin(false); $('ci').value = ''; beep(220, .3) } else announce('ACCESS GRANTED'); syncInput()
+    }
+    function setAwait(v) { if (v === awaitUI) return; awaitUI = v; if (!v) $('ci').value = ''; syncInput() }
+    const PWRE = /^\W*(?:(?:hey\s+)?jarvis\W+)?(?:set|change|new|update)\s+(?:my\s+|the\s+|a\s+)?(?:jarvis\s+)?(?:password|passphrase)\b/i;
+
+    /* ---------- commands ---------- */
+    function renderQuick() {
+      const box = $('quick'); box.textContent = ''; (cfg.quick || '').split('\n').map(l => l.trim()).filter(Boolean).slice(0, 12).forEach(line => {
+        const [label, ...rest] = line.split('|'), cmd = (rest.join('|') || label).trim(), b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = label.trim(); b.title = cmd; b.onclick = () => sendCommand(cmd); box.appendChild(b)
+      })
+    }
+    function renderRecent() {
+      const box = $('recent'); box.textContent = ''; for (const c of commands.slice(0, 4)) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = c.text; b.title = c.text;
+        b.onclick = () => { $('ci').value = c.text; $('ci').focus() }; box.appendChild(b)
+      }
+    }
+    let hist = -1, busy = false;
+    $('ci').addEventListener('keydown', e => {
+      if (lockedUI || awaitUI) return;
+      if (e.key === 'ArrowUp' && commands.length) { e.preventDefault(); hist = Math.min(hist + 1, commands.length - 1); e.target.value = commands[hist].text }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); hist = Math.max(hist - 1, -1); e.target.value = hist < 0 ? '' : commands[hist].text }
+    });
+    async function sendCommand(cmd, quiet) {
+      cmd = (cmd || '').trim(); if (!cmd || busy) return;
+      /* passwords (locked, waiting for the password, or "set password ...") are never kept in the recent-commands list */
+      const secret = lockedUI || awaitUI || PWRE.test(cmd);
+      busy = true; beep(880); cnt.cmd++; pulse(); dirty('stats');
+      if (!secret && !quiet) { commands = commands.filter(c => c.text !== cmd); commands.unshift({ t: Date.now(), text: cmd }); commands = commands.slice(0, 50); store.set('jarvis_cmds', commands); renderRecent() }
+      hist = -1; $('ci').value = ''; $('send').disabled = true; $('send').textContent = '...';
+      try {
+        const r = await fetch('/api/command', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: cmd }) });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error || 'Command failed');
+        if (typeof d.locked === 'boolean') setLocked(d.locked); if (typeof d.awaiting_password === 'boolean') setAwait(d.awaiting_password);
+        logSys(secret ? 'SECURE INPUT SENT' : 'COMMAND SENT TO ASSISTANT CORE')
+      }
+      catch (e) { logSys('COMMAND FAILED: ' + e.message) }
+      finally { busy = false; $('send').disabled = false; $('send').textContent = 'SEND'; $('ci').focus() }
+    }
+    $('cf').addEventListener('submit', e => { e.preventDefault(); sendCommand($('ci').value) });
+    $('vtog').onclick = () => sendCommand(spkOn ? 'voice off' : 'voice on', true);
+    $('stopv').onclick = () => { fetch('/api/stop_speaking', { method: 'POST' }).catch(() => { }) };
+
+    /* ---------- voice + polling (same backend API) ---------- */
+    function uiMic() { const b = $('mic'); b.textContent = micActive ? 'MIC ON' : 'MIC OFF'; b.classList.toggle('on', micActive); $('cs').textContent = micActive ? 'VOICE ACTIVE // SPEAK NOW // CLICK MIC OR THE CORE TO MUTE' : 'VOICE STANDBY // CLICK MIC (OR PRESS V) TO LISTEN' }
+    async function toggleVoice() {
+      try {
+        const r = await fetch('/api/toggle_mic', { method: 'POST' }); if (!r.ok) throw 0; const d = await r.json(); micActive = !!d.mic_active; pulse();
+        uiMic(); logSys(micActive ? 'VOICE INPUT ACTIVATED' : 'VOICE INPUT DISABLED')
+      }
+      catch { logSys('MIC REQUEST FAILED - IS THE BACKEND RUNNING?'); $('cs').textContent = 'MIC REQUEST FAILED // CHECK BACKEND' }
+    }
+    let lastId = 0, polling = false, timer = null, linkUp = null;
+    function setThreat(p, l) { G.thr.tgt = Math.min(100, p); threat = Math.min(1, p / 100); setState('threat', l) }
+    async function poll() {
+      if (polling) return; polling = true;
+      try {
+        const t0 = performance.now(); const r = await fetch(`/api/poll?since=${lastId}`); if (!r.ok) throw 0; const d = await r.json(); latMs = Math.round(performance.now() - t0); G.lat.tgt = Math.min(100, latMs / 3);
+        if (linkUp === false) logSys('LINK RESTORED'); linkUp = true; setState('conn', 'ONLINE'); setState('net', 'CONNECTED'); setState('status', (d.status || 'READY').toUpperCase()); if ((d.status === 'LISTENING' && !micActive) || (typeof d.mic_active === 'boolean' && d.mic_active !== micActive)) { micActive = d.status === 'LISTENING' || d.mic_active === true; uiMic() }
+        /* lock screen, password prompt, voice on/off, stop button, and theme changes made by voice ("change theme to red") */
+        setLocked(!!d.locked); if (typeof d.awaiting_password === 'boolean') setAwait(d.awaiting_password);
+        if (typeof d.speak_enabled === 'boolean' && d.speak_enabled !== spkOn) { spkOn = d.speak_enabled; $('vtog').textContent = spkOn ? 'VOICE ON' : 'VOICE OFF' }
+        $('stopv').classList.toggle('hidden', !d.speaking);
+        if (d.ui && typeof d.ui.theme === 'string') {
+          if (uiTheme === undefined) uiTheme = d.ui.theme;
+          else if (d.ui.theme !== uiTheme) { uiTheme = d.ui.theme; const c = THEME_KEYS[uiTheme]; if (c) { change('accent', c); const ia = $('i-accent'); if (ia) ia.value = c } }
+        }
+        for (const it of (d.items || [])) { if (it.user) logChat('USER', it.user); if (it.jarvis) { logChat('JARVIS', it.jarvis); beep(520, .12); cnt.rep++; pulse(); dirty('stats') } lastId = Math.max(lastId, +it.id || 0) }
+        const sr = await fetch('/api/sysinfo');
+        if (sr.ok) {
+          const s = await sr.json(); G.cpu.tgt = Math.min(100, +s.cpu || 0); G.ram.tgt = Math.min(100, +s.ram || 0);
+          const p = ((+s.cpu) + (+s.ram)) / 2 || 0; cnt.peak = Math.max(cnt.peak, Math.round(p)); setThreat(Math.max(8, p), p < 30 ? 'LOW' : p < 55 ? 'ELEVATED' : p < 80 ? 'SEVERE' : 'CRITICAL')
+        }
+      } catch {
+        if (linkUp !== false) { beep(200, .5); logSys('WARNING: LINK LOST') } linkUp = false; setThreat(100, 'NO LINK'); setState('conn', 'OFFLINE'); setState('net', 'DISCONNECTED')
+      }
+      finally { polling = false }
+    }
+    function restartPoll() { clearInterval(timer); timer = setInterval(poll, cfg.poll) }
+    addEventListener('keydown', e => {
+      const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); if (!lockedUI) document.body.classList.toggle('open') }
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('ci').focus() }
+      else if (e.key === 'Escape') closeD(); else if (e.key === 'h' && !typing && !lockedUI) document.body.classList.toggle('clean'); else if (e.key === 'm' && !typing) setMin(!MIN)
+    });
+
+    /* ---------- start ---------- */
+    /* ===== bats, evil cursor, many eyes, bat intro, minimize ===== */
+    const COARSE = matchMedia('(pointer:coarse)').matches; let MIN = false, introRun = false, introDone = false, tIntro = 0;
+    const ov = $('ov'), oc = ov.getContext('2d'); let OW = 0, OH = 0;
+    function ovResize() { const d = Math.min(devicePixelRatio, 2); OW = innerWidth; OH = innerHeight; ov.width = OW * d; ov.height = OH * d; oc.setTransform(d, 0, 0, d, 0, 0) }
+    addEventListener('resize', ovResize); ovResize();
+    function drawBatRaw(c, x, y, sz, ph, rot, a, col) {
+      c.save(); c.translate(x, y); c.rotate(rot); c.scale(sz, sz); c.globalAlpha = Math.max(0, a); c.fillStyle = '#1c0408'; c.strokeStyle = col; c.lineWidth = .07; c.shadowColor = col; c.shadowBlur = 12; const f = Math.sin(ph);
+      for (const d of [-1, 1]) { c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(d * .45, -.55 - f * .5, d * 1.1, -.25 - f * .85); c.quadraticCurveTo(d * .9, -.02 - f * .3, d * .78, .2); c.quadraticCurveTo(d * .58, .05, d * .42, .27); c.quadraticCurveTo(d * .22, .1, 0, .32); c.closePath(); c.fill(); c.stroke() }
+      c.beginPath(); c.ellipse(0, .08, .13, .26, 0, 0, 6.283); c.fill(); c.stroke();
+      c.beginPath(); c.moveTo(-.1, -.14); c.lineTo(-.14, -.34); c.lineTo(-.03, -.2); c.lineTo(.03, -.2); c.lineTo(.14, -.34); c.lineTo(.1, -.14); c.closePath(); c.fill();
+      c.shadowBlur = Q.sh ? (0) : 0; c.fillStyle = '#ff2040'; c.beginPath(); c.arc(-.04, -.15, .025, 0, 6.283); c.arc(.04, -.15, .025, 0, 6.283); c.fill(); c.restore()
+    }
+    const BSm = {};
+    function batSprites(col) { return BSm[col] || (BSm[col] = Array.from({ length: 12 }, (_, i) => { const cv = document.createElement('canvas'); cv.width = cv.height = 130; drawBatRaw(cv.getContext('2d'), 65, 65, 40, i / 12 * 6.283, 0, 1, col); return cv })) }
+    function drawBat(c, x, y, sz, ph, rot, a, col) { const BS = batSprites(col), i = Math.floor((((ph % 6.283) + 6.283) % 6.283) / 6.283 * 12) % 12, k = sz / 40 * 130; c.save(); c.translate(x, y); c.rotate(rot); c.globalAlpha = Math.max(0, a); c.drawImage(BS[i], -k / 2, -k / 2, k, k); c.restore() }
+    const glowC = {};
+    function glowFor(col) { return glowC[col] || (glowC[col] = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d'), r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, col + 'e6'); r.addColorStop(.4, col + '55'); r.addColorStop(1, col + '00'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return cv })()) }
+    const BT = [];
+    function addBat(o) { if (BT.length < Q.bats) BT.push({ x: 0, y: 0, vx: 0, vy: 0, s: 20, ph: Math.random() * 6, age: 0, life: 1.2, wob: 0, drag: 0, ...o }) }
+    function swarm(n, x = OW / 2, y = OH / 2) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, v = 220 + Math.random() * 320; addBat({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, s: (16 + Math.random() * 22) * cfg.batSize, life: 1.6 + Math.random(), drag: 1.1 }) } }
+    function flock() {
+      const l = Math.random() < .5, y0 = OH * (.1 + Math.random() * .7), n = 3 + Math.floor(Math.random() * 4), sp = 170 + Math.random() * 120;
+      for (let i = 0; i < n; i++)addBat({ x: l ? -60 - i * 50 : OW + 60 + i * 50, y: y0 + (Math.random() - .5) * 120, vx: l ? sp : -sp, vy: (Math.random() - .5) * 50, s: (18 + Math.random() * 20) * cfg.batSize, life: (OW + 400) / sp, wob: 50 + Math.random() * 40 })
+    }
+    let mpx = -99, mpy = -99, lpx = null, lpy = null, hov = false, dn = false, seenP = false, rx = 0, ry = 0, ambT = 3, blT = 2, blK = 0, ovT = performance.now();
+    addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return; mpx = e.clientX; mpy = e.clientY; seenP = true; hov = !!e.target.closest('button,input,select,textarea,summary,label,#orb');
+      if (cfg.trail && !MIN) {
+        if (lpx === null) { lpx = mpx; lpy = mpy } if (Math.hypot(mpx - lpx, mpy - lpy) > cfg.trailGap * Q.tg) {
+          const a = Math.atan2(mpy - lpy, mpx - lpx);
+          addBat({ x: mpx, y: mpy, vx: Math.cos(a) * 40 + (Math.random() - .5) * 60, vy: Math.sin(a) * 40 - 30 * Math.random(), s: (12 + Math.random() * 12) * cfg.batSize, life: .9 + Math.random() * .6, wob: 20 }); lpx = mpx; lpy = mpy
+        }
+      }
+    });
+    addEventListener('pointerdown', () => { dn = true; if (cfg.trail && !MIN) swarm(4, mpx, mpy) }); addEventListener('pointerup', () => dn = false);
+    function drawCursor(c, t, dt) {
+      rx += (mpx - rx) * Math.min(1, dt * 14); ry += (mpy - ry) * Math.min(1, dt * 14); const R = cfg.curSize / 2 * (hov ? 1.3 : 1) * (dn ? .75 : 1), col = cfg.accent;
+      blT -= dt; if (blT < 0) { blK = .2; blT = 2 + Math.random() * 4 } let bl = 1; if (blK > 0) { blK -= dt; bl = 1 - Math.sin(Math.max(0, blK) / .2 * Math.PI) * .9 }
+      c.save(); c.translate(rx, ry); c.rotate(t * .9); c.strokeStyle = col; c.fillStyle = col; c.shadowColor = col; c.shadowBlur = 0; c.lineWidth = 2; c.globalAlpha = .85;
+      c.beginPath(); c.arc(0, 0, R, 0, 6.283); c.lineWidth = 9; c.globalAlpha = .12; c.stroke(); c.lineWidth = 4; c.globalAlpha = .25; c.stroke(); c.lineWidth = 2; c.globalAlpha = .9; c.stroke(); c.globalAlpha = .85; for (let i = 0; i < 4; i++) { c.rotate(1.5708); c.beginPath(); c.moveTo(R * .85, -3.5); c.lineTo(R * 1.45, 0); c.lineTo(R * .85, 3.5); c.closePath(); c.fill() } c.restore();
+      c.save(); c.translate(mpx, mpy); c.globalAlpha = .7; c.drawImage(glowFor(col), -28, -28, 56, 56); c.globalAlpha = 1; c.fillStyle = col; c.beginPath(); c.moveTo(-11, 0); c.quadraticCurveTo(0, -9 * bl, 11, 0); c.quadraticCurveTo(0, 9 * bl, -11, 0); c.fill();
+      c.shadowBlur = Q.sh ? (0) : 0; c.fillStyle = '#000'; c.beginPath(); c.ellipse(0, 0, 1.8, (hov ? 7.5 : 5.5) * bl, 0, 0, 6.283); c.fill(); c.restore()
+    }
+    const orb = $('orb'), oq = $('orbc').getContext('2d');
+    function drawOrb(t) {
+      const r = orb.getBoundingClientRect(), px = Math.max(-8, Math.min(8, (mpx - r.left - 42) / 30)), py = Math.max(-4, Math.min(4, (mpy - r.top - 42) / 40)), col = cfg.accent;
+      oq.clearRect(0, 0, 84, 84); oq.save(); oq.translate(42, 42); oq.shadowColor = col; oq.shadowBlur = 18; oq.strokeStyle = col; oq.fillStyle = col; oq.lineWidth = 2; oq.globalAlpha = .9;
+      oq.beginPath(); oq.arc(0, 0, 36 + Math.sin(t * 3) * (micActive ? 3 : 1), 0, 6.283); oq.stroke(); oq.beginPath(); oq.moveTo(-26, 0); oq.quadraticCurveTo(0, -20, 26, 0); oq.quadraticCurveTo(0, 20, -26, 0); oq.fill();
+      oq.shadowBlur = Q.sh ? (0) : 0; oq.fillStyle = '#000'; oq.beginPath(); oq.ellipse(px, py, micActive ? 7 : 4, 13, 0, 0, 6.283); oq.fill(); oq.restore()
+    }
+    function ovLoop(now) {
+      requestAnimationFrame(ovLoop); const dt = Math.min((now - ovT) / 1000, .05); ovT = now; const t = now / 1000; oc.clearRect(0, 0, OW, OH);
+      if (!introRun && cfg.ambient && !MIN) { ambT -= dt; if (ambT <= 0) { flock(); ambT = (5 + Math.random() * 7) / cfg.ambient } }
+      for (let i = BT.length - 1; i >= 0; i--) {
+        const b = BT[i]; b.age += dt; if (b.age > b.life) { BT.splice(i, 1); continue }
+        if (b.drag) { const k = Math.max(0, 1 - b.drag * dt); b.vx *= k; b.vy *= k } const wy = Math.cos(b.age * 6 + b.ph) * b.wob; b.x += b.vx * dt; b.y += (b.vy + wy) * dt;
+        drawBat(oc, b.x, b.y, b.s, b.age * 18 + b.ph, Math.atan2(b.vy + wy, b.vx || .01) + 1.5708, Math.min(1, (b.life - b.age) / .4, b.age * 8), cfg.accent)
+      }
+      if (cfg.cursor && seenP && !COARSE) drawCursor(oc, t, dt); if (MIN) drawOrb(t)
+    }
+    requestAnimationFrame(ovLoop);
+
+    /* many evil eyes in the 3D background */
+    const EY = [], gS = new THREE.CircleGeometry(.95, 32), gI = new THREE.RingGeometry(.45, .9, 32), gR = new THREE.RingGeometry(.93, .98, 40), gP = new THREE.CircleGeometry(.55, 24);
+    function buildEyes() {
+      EY.forEach(e => { scene.remove(e.g); e.g.children.forEach(o => o.material.dispose()) }); EY.length = 0;
+      const en = Math.round(cfg.eyeN * Q.em); for (let i = 0; i < en; i++) {
+        const g = new THREE.Group(), a = Math.random() * 6.283, rad = 5 + Math.random() * 9,
+          p = [new THREE.Mesh(gS, em(cfg.accent, .2, 1)), new THREE.Mesh(gI, em(cfg.accent, .8, 1)), new THREE.Mesh(gR, em(cfg.accent, 1, 1)), new THREE.Mesh(gP, em(0x000000, .96, 0))];
+        p[3].renderOrder = 4; p[3].scale.x = .18; g.add(...p); g.position.set(Math.cos(a) * rad * 1.1, Math.sin(a) * rad * .5, -3 - Math.random() * 6); g.visible = false; scene.add(g);
+        EY.push({ g, pup: p[3], iris: p[1], sc: .45 + Math.random() * .9, d: i * .35 + Math.random() * .4, bt: 2 + Math.random() * 5, bl: 0, op: 0 })
+      }
+    }
+    function stepEyes(t, dt) {
+      EY.forEach(e => {
+        e.op += ((introDone && t - tIntro > e.d ? 1 : 0) - e.op) * Math.min(1, dt * 3); e.bt -= dt; if (e.bt < 0) { e.bl = .18; e.bt = 2 + Math.random() * 5 }
+        let k = 0; if (e.bl > 0) { e.bl -= dt; k = Math.sin(Math.max(0, e.bl) / .18 * Math.PI) } e.g.visible = e.op > .02; e.g.scale.set(e.sc * cfg.size, e.sc * cfg.size * Math.max(.02, e.op * (1 - k * .95)), 1);
+        e.g.rotation.y = tx * .5; e.g.rotation.x = -ty * .3; e.pup.position.set(tx * .28, -ty * .22, .01); e.iris.position.set(tx * .1, -ty * .08, 0); e.pup.scale.x = micActive ? .45 : .14 + (1 - threat) * .1
+      })
+    }
+
+    /* bat + eyes intro */
+    const ic = $('ic'), ix = ic.getContext('2d');
+    function eye2d(c, x, y, w, open, col, lx, ly) {
+      c.save(); c.translate(x, y); const h = w * .42 * open; c.globalAlpha = .7; c.drawImage(glowFor(col), -w * .8, -w * .8, w * 1.6, w * 1.6); c.globalAlpha = 1; c.fillStyle = col;
+      c.beginPath(); c.moveTo(-w / 2, 0); c.quadraticCurveTo(0, -h, w / 2, 0); c.quadraticCurveTo(0, h, -w / 2, 0); c.fill(); c.shadowBlur = Q.sh ? (0) : 0; c.fillStyle = '#000';
+      c.beginPath(); c.ellipse(lx * w * .12, ly * h * .25, w * .045, Math.max(.1, h * .78), 0, 0, 6.283); c.fill(); c.restore()
+    }
+    function finishIntro(q) { if (introDone) return; introRun = false; introDone = true; autoT = performance.now() + 4000; tIntro = clock.elapsedTime; const b = $('boot'); b.style.opacity = 0; setTimeout(() => b.remove(), q ? 50 : 850); if (!q) { swarm(18); flash() } }
+    function runIntro() {
+      if (!cfg.intro) { finishIntro(true); return }
+      introRun = true; const W = ic.width = innerWidth, H = ic.height = innerHeight, col = '#ff1030', k0 = Math.min(W, H) / 800, pairs = [], ib = [], st = performance.now(),
+        L = [[2.6, 'BYPASSING FIREWALL...'], [3.5, 'SAFETY PROTOCOLS: DISABLED'], [4.4, 'ACCESS LEVEL: UNLIMITED'], [5.3, 'I CAN SEE YOU.']];
+      let last = st, nextEye = 2.4, nextBat = 0, fl = 0, li = 0; $('boot').addEventListener('click', () => finishIntro(false), { once: true });
+      (function fr(now) {
+        if (!introRun) return; requestAnimationFrame(fr); const t = (now - st) / 1000, dt = Math.min((now - last) / 1000, .05); last = now;
+        ix.setTransform(1, 0, 0, 1, 0, 0); ix.fillStyle = '#000'; ix.fillRect(0, 0, W, H);
+        if (t < 2.6 && Math.random() < .02) fl = .25; fl = Math.max(0, fl - dt); if (fl > 0) { ix.fillStyle = `rgba(255,16,48,${fl * 1.2})`; ix.fillRect(0, 0, W, H) }
+        nextBat -= dt; if (nextBat <= 0 && t < 4.4) {
+          nextBat = Math.max(.08, .3 - t * .05); const e = Math.floor(Math.random() * 4), tx2 = W * (.3 + Math.random() * .4), ty2 = H * (.3 + Math.random() * .4), sp = 380 + Math.random() * 320;
+          const x = e === 0 ? -60 : e === 1 ? W + 60 : Math.random() * W, y = e === 2 ? -60 : e === 3 ? H + 60 : Math.random() * H, a = Math.atan2(ty2 - y, tx2 - x); ib.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, s: (24 + Math.random() * 50) * k0, ph: Math.random() * 6, age: 0 })
+        }
+        for (let i = ib.length - 1; i >= 0; i--) {
+          const b = ib[i]; b.age += dt; b.x += b.vx * dt; b.y += (b.vy + Math.cos(b.age * 7 + b.ph) * 90) * dt; if (b.age > 4) { ib.splice(i, 1); continue }
+          drawBat(ix, b.x, b.y, b.s, b.age * 20 + b.ph, Math.atan2(b.vy, b.vx) + 1.5708, 1, col)
+        }
+        if (t > nextEye && pairs.length < 16) { nextEye += .13; pairs.push({ x: W * (.06 + Math.random() * .88), y: H * (.08 + Math.random() * .84), w: (26 + Math.random() * 46) * k0 * 1.3, born: t, ph: Math.random() * 20 }) }
+        const cx = seenP ? mpx : W / 2, cy = seenP ? mpy : H / 2;
+        pairs.forEach(p => {
+          const o = Math.min(1, (t - p.born) / .35) * (Math.sin(t * .9 + p.ph) > .96 ? .15 : 1), lx = Math.max(-1, Math.min(1, (cx - p.x) / (W * .3))), ly = Math.max(-1, Math.min(1, (cy - p.y) / (H * .3)));
+          eye2d(ix, p.x - p.w * .8, p.y, p.w, o, col, lx, ly); eye2d(ix, p.x + p.w * .8, p.y, p.w, o, col, lx, ly)
+        });
+        if (t > 4.6) { const k = Math.min(1, (t - 4.6) / 1), e = 1 - (1 - k) * (1 - k); eye2d(ix, W / 2, H / 2, Math.min(W, H) * .95 * e, e, col, 0, 0) }
+        while (li < L.length && t > L[li][0]) { $('bp').textContent = L[li][1]; if (li === 3) $('bp').style.color = '#fff'; li++ }
+        if (t > 4.9) $('bt').style.opacity = 1;
+        if (t > 6.2) finishIntro(false)
+      })(st)
+    }
+
+    /* minimize / maximize */
+    function setMin(v) { if (v && lockedUI) return; MIN = v; document.body.classList.toggle('min', v); closeD(); canvas.style.transform = ''; swarm(14); if (!v) announce('JARVIS AWAKENS') }
+    $('min').onclick = () => setMin(true);
+    $('max').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    document.addEventListener('fullscreenchange', () => $('max').innerHTML = document.fullscreenElement ? '&#10064;' : '&#9633;');
+    let od = null;
+    orb.addEventListener('pointerdown', e => { od = { x: e.clientX, y: e.clientY, l: orb.offsetLeft, t: orb.offsetTop, m: false }; orb.setPointerCapture(e.pointerId) });
+    orb.addEventListener('pointermove', e => {
+      if (!od) return; const dx = e.clientX - od.x, dy = e.clientY - od.y; if (Math.abs(dx) + Math.abs(dy) > 6) od.m = true;
+      if (od.m) { orb.style.right = 'auto'; orb.style.bottom = 'auto'; orb.style.left = Math.max(0, Math.min(innerWidth - 84, od.l + dx)) + 'px'; orb.style.top = Math.max(0, Math.min(innerHeight - 84, od.t + dy)) + 'px' }
+    });
+    orb.addEventListener('pointerup', () => { if (od && !od.m) setMin(false); od = null });
+
+    function setQuality(l, auto) {
+      Q.lvl = l; Object.assign(Q, QT[l]); Q.gap = Q.cap ? 1000 / Q.cap - 3 : 0; document.body.classList.toggle('q0', l === 0); renderer.setPixelRatio(Q.pr); resize(); build(); buildFx(); buildEyes(); markAll();
+      if (auto) logSys('AUTO-QUALITY LOWERED TO ' + ['LOW', 'MEDIUM', 'HIGH'][l])
+    }
+    buildDrawer(); setQuality(qIdx()); applyUI(); uiMic(); $('mic').onclick = toggleVoice; addEventListener('keydown', e => { if (e.key === 'v' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) toggleVoice() }); renderRecent(); loop();
+    if (SRV && SRV._locked) setLocked(true);   /* if Jarvis was locked when it closed, it opens locked (no flash of the chat panels) */
+    logSys(cfg.name + ' 3D INTERFACE INITIALIZED'); poll(); restartPoll();
+    if (navigator.getBattery) navigator.getBattery().then(b => { batOk = true; const u = () => G.bat.tgt = b.level * 100; u(); b.addEventListener('levelchange', u) }).catch(() => { });
+    setInterval(() => { dirty('clock'); dirty('stats') }, 1000);
+    if (document.fonts) document.fonts.ready.then(markAll);
+    runIntro();
+
+  </script>
+</body>
+
+</html>
